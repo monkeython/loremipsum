@@ -30,7 +30,8 @@ egg = {
     'py_modules': [name],
     'requires': ['setuptools'],
     'include_package_data': True,
-    'exclude_package_data': {name: ["*.rst", "docs", "tests"]},
+    'exclude_package_data': {name:
+        ['.gitignore', '*.rst', 'docs', 'tests', 'examples']},
     'test_suite': 'tests.suite' }
 
 if __name__ == '__main__':

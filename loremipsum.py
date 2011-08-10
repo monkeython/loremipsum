@@ -1,11 +1,11 @@
 """
-    This module provide a simple way to generate "Lorem Ipsum" paragraphs,
-    sentences, or just random words.
+This module provide a simple way to generate "Lorem Ipsum" paragraphs,
+sentences, or just random words.
 """
 import math
-import random
+from random import normalvariate, choice
 import re
-import pkg_resources
+from pkg_resources import resource_string
 
 __author__ = "Luca De Vitis <luca@monkeython.com>"
 __version__ = '0.1'
@@ -24,17 +24,16 @@ __license__ = """
       GNU General Public License for more details.
 
       You should have received a copy of the GNU General Public License
-      .along with this program.  If not, see <http://www.gnu.org/licenses/>.
+      along with this program.  If not, see <http://www.gnu.org/licenses/>
 """ % __copyright__
 __doc__ = """
+:abstract: %s
 :version: %s
 :author: %s
 :organization: Monkeython
 :contact: http://www.monkeython.com
-:abstract: %s
 :copyright: %s
-
-""" % (__version__, __author__, __license__, __doc__)
+""" % (' '.join(__doc__.splitlines()), __version__, __author__, __license__)
 __docformat__ = 'restructuredtext en'
 __classifiers__ = [
     'Development Status :: 3 - Alpha',
@@ -50,9 +49,10 @@ _SENTENCES_DELIMITERS = ['.', '?', '!']
 # "hello" with a comma next to it)
 _WORDS_DELIMITERS = [','] + _SENTENCES_DELIMITERS
 
-_DEFAULT_SAMPLE = pkg_resources.resource_string('loremipsum', 'data/sample.txt')
+_SAMPLE = resource_string('loremipsum', 'data/sample.txt')
+_DICTIONARY = resource_string('loremipsum', 'data/dictionary.txt').split()
 
-_DEFAULT_DICT = pkg_resources.resource_string('loremipsum', 'data/dictionary.txt').split()
+_LOREM_IPSUM = "lorem ipsum dolor sit amet, consecteteur adipiscing elit"
 
 def _paragraphs(text):
     """
@@ -76,12 +76,21 @@ def _sentences(text):
     return filter(None, [s.strip() for s in sentences])
 
 def _mean(values):
+    """
+    Calculate the mean for a list of integers.
+    """
     return sum(values) / float(max(len(values), 1))
 
 def _variance(values):
+    """
+    Calculate the variance for a list of integers.
+    """
     return _mean([v**2 for v in values]) - _mean(values)**2
 
 def _sigma(values):
+    """
+    Calculate the sigma for a list of integers.
+    """
     return math.sqrt(_variance(values))
 
 class DictionaryError(Exception):
@@ -111,10 +120,10 @@ class Generator(object):
     so that it will have a similar distribution of paragraph, sentence and word
     lengths.
 
-    :prarm sample: a string containing the sample text
+    :param sample: a string containing the sample text
     :type sample: str
     :param dictionary: a string containing a list of words
-    :type dictionary: str
+    :type dictionary: list
     """
 
     # Words that can be used in the generated output
@@ -144,9 +153,9 @@ class Generator(object):
     __generated_paragraph_mean = 0
     __generated_paragraph_sigma = 0
 
-    def __init__(self, sample=_DEFAULT_SAMPLE, dictionary=_DEFAULT_DICT):
-        self.sample = sample
-        self.dictionary = dictionary
+    def __init__(self, sample=None, dictionary=None):
+        self.sample = sample or _SAMPLE
+        self.dictionary = dictionary or _DICTIONARY
 
     def __get_sentence_mean(self):
         """
@@ -224,9 +233,10 @@ class Generator(object):
 
     def reset_statistics(self):
         """
-        Returns the values of sentence_mean, sentence_sigma, paragraph_mean,
-        and paragraph_sigma to their values as calculated from the sample
-        text.
+        Returns the values of :py:attr:`sentence_mean`,
+        :py:attr:`sentence_sigma`, :py:attr:`paragraph_mean`, and
+        :py:attr:`paragraph_sigma` to their values as calculated from the
+        sample text.
         """
         self.sentence_mean = self.__generated_sentence_mean
         self.sentence_sigma = self.__generated_sentence_sigma
@@ -248,53 +258,51 @@ class Generator(object):
         :param sample: the sample text
         :type sample: str
         :rtype: str
-        :raises: :py:exc:`SampleError`
+        :raises: :py:exc:`SampleError` if no words in sample text
         """
         return self.__sample
 
     def __set_sample(self, sample):
-        self.__sample = sample
+        words = sample.split()
+        previous = (0, 0)
+        chains = {}
+        starts = [previous]
 
         # Generates the __chains and __starts values required for sentence
         # generation.
-        words = sample.split()
-        if words:
-            previous = (0, 0)
-            chains = {}
-            starts = [previous]
-            for word in words:
-                length, delimiter = len(word), ''
-                for d in _WORDS_DELIMITERS:
-                    if word.endswith(d):
-                        length, delimiter = length -1, delimiter
-                        break
-                if length > 0:
-                    chains.setdefault(previous, []).append((length, delimiter))
-                    if delimiter:
-                        starts.append(previous)
-                    previous = (previous[1], length)
-            if chains:
-                self.__chains = chains
-                self.__starts = starts
-                return
+        for word in words:
+            length, delimiter = len(word), ''
+            for d in _WORDS_DELIMITERS:
+                if word.endswith(d):
+                    length, delimiter = length -1, delimiter
+                    break
+            if length > 0:
+                chains.setdefault(previous, []).append((length, delimiter))
+                if delimiter:
+                    starts.append(previous)
+                previous = (previous[1], length)
+        if chains:
+            self.__sample = sample
+            self.__chains = chains
+            self.__starts = starts
+
+            # Calculates the mean and standard deviation of the lengths of
+            # sentences (in words) in a sample text.
+            sentences = filter(None, [s.strip() for s in _sentences(sample)])
+            sentences_lengths = [len(s.split()) for s in sentences ]
+            self.__generated_sentence_mean = _mean(sentences_lengths)
+            self.__generated_sentence_sigma = _sigma(sentences_lengths)
+
+            # Calculates the mean and standard deviation of the lengths of
+            # paragraphs (in sentences) in a sample text.
+            paragraphs = filter(None, [p.strip() for p in _paragraphs(sample)])
+            paragraphs_lengths = [len(_sentences(p)) for p in paragraphs]
+            self.__generated_paragraph_mean = _mean(paragraphs_lengths)
+            self.__generated_paragraph_sigma = _sigma(paragraphs_lengths)
+
+            self.reset_statistics()
         else:
             raise SampleError
-
-        # Calculates the mean and standard deviation of the lengths of
-        # sentences (in words) in a sample text.
-        sentences = filter(None, [s.strip() for s in _sentences(sample)])
-        sentences_lengths = [len(s.split()) for s in sentences ]
-        self.__generated_sentence_mean = _mean(sentences_lengths)
-        self.__generated_sentence_sigma = _sigma(sentences_lengths)
-
-        # Calculates the mean and standard deviation of the lengths of
-        # paragraphs (in sentences) in a sample text.
-        paragraphs = filter(None, [p.strip() for p in _paragraphs(sample)])
-        paragraphs_lengths = [len(_sentences(p)) for p in paragraphs]
-        self.__generated_paragraph_mean = _mean(paragraphs_lengths)
-        self.__generated_paragraph_sigma = _sigma(paragraphs_lengths)
-
-        self.reset_statistics()
 
     sample = property(__get_sample, __set_sample)
 
@@ -306,7 +314,7 @@ class Generator(object):
         :param words: list of words
         :type words: list
         :rtype: dict
-        :raises: :py:exc:`DictionaryError`
+        :raises: :py:exc:`DictionaryError` if no valid words in dictionary
         """
         return self.__dictionary.copy()
 
@@ -338,41 +346,40 @@ class Generator(object):
         """
         Generates a single sentence, of random length.
 
-        If start_with_lorem=True, then the sentence will begin with the
-        standard "Lorem ipsum..." first sentence.
+        :param start_with_lorem: if True, then the text will begin with the
+                                 standard "Lorem ipsum..." first sentence.
+        :type start_with_lorem: bool
         """
 
         # The length of the sentence is a normally distributed random variable.
-        sentence_length = random.normalvariate(self.sentence_mean, \
-            self.sentence_sigma)
-        sentence_length = max(int(round(sentence_length)), 1)
+        mean, sigma = self.sentence_mean, self.sentence_sigma
+        sentence_length = max(2, int(round(normalvariate(mean, sigma))))
 
-        sentence = []
+        words = []
         previous = ()
+        last_word = ''
 
         word_delimiter = '' # Defined here in case while loop doesn't run
 
         # Start the sentence with "Lorem ipsum...", if desired
         if start_with_lorem:
-            lorem = "lorem ipsum dolor sit amet, consecteteur adipiscing elit"
-            lorem = lorem.split()
-            sentence += lorem[:sentence_length]
-            last_char = sentence[-1][-1]
+            words.extend(_LOREM_IPSUM.split()[:sentence_length])
+            last_char = words[-1][-1]
             if last_char in _WORDS_DELIMITERS:
                 word_delimiter = last_char
 
         # Generate a sentence from the "chains"
-        while len(sentence) < sentence_length:
+        for w in xrange(sentence_length - len(words)):
             # If the current starting point is invalid, choose another randomly
             if (not self.__chains.has_key(previous)):
                 starts = set(self.__starts)
                 chains = set(self.__chains.keys())
-                previous = random.choice(list(chains.intersection(starts)))
+                previous = choice(list(chains.intersection(starts)))
 
             # Choose the next "chain" to go to. This determines the next word
             # length we'll use, and whether there is e.g. a comma at the end of
             # the word.
-            chain = random.choice(self.__chains[previous])
+            chain = choice(self.__chains[previous])
             word_length = chain[0]
 
             # If the word delimiter contained in the chain is also a sentence
@@ -391,53 +398,164 @@ class Generator(object):
             for length in lengths:
                 if abs(word_length - length) < abs(word_length - closest):
                     closest = length
-            word = random.choice(list(self.__dictionary[closest]))
 
-            sentence.append(word + word_delimiter)
+            # Readability. No word can appear next to itself.
+            word = choice(list(self.__dictionary[closest]))
+            while word == last_word:
+                word = choice(list(self.__dictionary[closest]))
+            last_word = word
+
+            words.append(word + word_delimiter)
             previous = (previous[1], word_length)
 
         # Finish the sentence off with capitalisation, a period and
         # form it into a string
-        return ' '.join(sentence).capitalize().rstrip(word_delimiter) + '.'
+        sentence = ' '.join(words).capitalize().rstrip(word_delimiter) + '.'
+        return (1, len(words), sentence)
+
+    def generate_sentences(self, amount, start_with_lorem=False):
+        """
+        Generator method that yields sentences, of random length.
+
+        :param start_with_lorem: if True, then the text will begin with the
+                                 standard "Lorem ipsum..." first sentence.
+        :type start_with_lorem: bool
+        """
+        yield self.generate_sentence(start_with_lorem)
+        for s in xrange(amount - 1):
+            yield self.generate_sentence()
 
     def generate_paragraph(self, start_with_lorem=False):
         """
         Generates a single lorem ipsum paragraph, of random length.
 
-        If start_with_lorem=True, then the paragraph will begin with the
-        standard "Lorem ipsum..." first sentence.
+        :param start_with_lorem: if True, then the text will begin with the
+                                 standard "Lorem ipsum..." first sentence.
+        :type start_with_lorem: bool
         """
 
         # The length of the paragraph is a normally distributed random variable.
-        paragraph_length = random.normalvariate(self.paragraph_mean, \
-            self.paragraph_sigma)
-        paragraph_length = max(int(round(paragraph_length)), 1)
+        mean, sigma = self.paragraph_mean, self.paragraph_sigma
+        sentences = max(2, int(round(normalvariate(mean, sigma))))
 
-        paragraph = [self.generate_sentence(start_with_lorem)]
-        # Construct a paragraph from a number of sentences.
-        while len(paragraph) < paragraph_length:
-            paragraph.append(self.generate_sentence())
+        words = 0
+        paragraph = []
+        generate = self.generate_sentences
+        for void, word_count, sentence in generate(sentences, start_with_lorem):
+            words += word_count
+            paragraph.append(sentence)
 
         # Form the paragraph into a string.
-        return ' '.join(paragraph)
+        return (sentences, words, ' '.join(paragraph))
 
-g = Generator()
+    def generate_paragraphs(self, amount, start_with_lorem=False):
+        """
+        Generator method that yields paragraphs, of random length.
+
+        :param start_with_lorem: if True, then the text will begin with the
+                                 standard "Lorem ipsum..." first sentence.
+        :type start_with_lorem: bool
+        """
+        yield self.generate_paragraph(start_with_lorem)
+        for p in xrange(amount - 1):
+            yield self.generate_paragraph()
+
+_generator = Generator()
+
+def generate_sentence(start_with_lorem=False):
+    """
+    Utility function to generate a single random sentence with stats.
+
+    :param start_with_lorem: if True, then the text will begin with the
+                             standard "Lorem ipsum..." first sentence.
+    :type start_with_lorem: bool
+    :returns: a tuple with amount of sentences, words and the text
+    :rtype: tuple(int, int, str)
+    """
+    return _generator.generate_sentence(start_with_lorem)
 
 def generate_sentences(amount, start_with_lorem=False):
     """
-    Utility function to generate random sentences.
+    Generator function that yields specified amount of random sentences with
+    stats.
+
+    :param start_with_lorem: if True, then the text will begin with the
+                             standard "Lorem ipsum..." first sentence.
+    :param amount: amount of sentences to generate.
+    :type amount: int
+    :returns: a tuple with amount of sentences, words and the text
+    :rtype: tuple(int, int, str)
     """
-    return [g.generate_sentence(start_with_lorem) for s in xrange(amount)]
+    return _generator.generate_sentences(amount, start_with_lorem)
+
+def generate_paragraph(start_with_lorem=False):
+    """
+    Utility function to generate a single random paragraph with stats.
+
+    :param start_with_lorem: if True, then the text will begin with the
+                             standard "Lorem ipsum..." first sentence.
+    :returns: a tuple with amount of sentences, words and the text
+    :rtype: tuple(int, int, str)
+    """
+    return _generator.generate_paragraph(start_with_lorem)
 
 def generate_paragraphs(amount, start_with_lorem=False):
     """
-    Utility function to generate random sentences.
-    """
-    return [g.generate_paragraph(start_with_lorem) for p in xrange(amount)]
+    Generator function that yields specified amount of random paragraphs with
+    stats.
 
-def generate_words(amount):
+    :param start_with_lorem: if True, then the text will begin with the
+                             standard "Lorem ipsum..." first sentence.
+    :returns: a tuple with amount of sentences, words and the text
+    :rtype: tuple(int, int, str)
     """
-    Utility function to generate random sentences.
+    return _generator.generate_paragraphs(amount, start_with_lorem)
+
+def get_sentence(start_with_lorem=False):
     """
-    words = g.words
-    return [random.choice(words) for w in xrange(amount)]
+    Utility function to get a single random sentence.
+
+    :param start_with_lorem: if True, then the text will begin with the
+                             standard "Lorem ipsum..." first sentence.
+    :returns: a random sentence
+    :rtype: str
+    """
+    return _generator.generate_sentence(start_with_lorem)[-1]
+
+def get_sentences(amount, start_with_lorem=False):
+    """
+    Utility function to get specified amount of random sentences.
+
+    :param start_with_lorem: if True, then the text will begin with the
+                             standard "Lorem ipsum..." first sentence.
+    :param amount: amount of sentences to get.
+    :type amount: int
+    :returns: a list of random sentences.
+    :rtype: list
+    """
+    sentences = _generator.generate_sentences(amount, start_with_lorem)
+    return [s[-1] for s in sentences]
+
+def get_paragraph(start_with_lorem=False):
+    """
+    Utility function to get a single random paragraph.
+
+    :param start_with_lorem: if True, then the text will begin with the
+                             standard "Lorem ipsum..." first sentence.
+    :returns: a random paragrpah
+    :rtype: str
+    """
+    return _generator.generate_paragraph(start_with_lorem)[-1]
+
+def get_paragraphs(amount, start_with_lorem=False):
+    """
+    Utility function to get specified amount of random paragraphs.
+
+    :param start_with_lorem: if True, then the text will begin with the
+                             standard "Lorem ipsum..." first sentence.
+    :returns: a list of random paragraphs
+    :rtype: list
+    """
+    paragraphs = _generator.generate_paragraphs(amount, start_with_lorem)
+    return [p[-1] for p in paragraphs]
+

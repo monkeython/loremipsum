@@ -35,6 +35,7 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.autodoc']
 
+autodoc_member_order = 'groupwise'
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -48,7 +49,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Python musiXmatch'
+project = u'Lorem Ipsum'
 copyright = u'2011, Luca De Vitis'
 
 # The version info for the project you're documenting, acts as replacement for

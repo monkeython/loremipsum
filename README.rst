@@ -1,8 +1,5 @@
-Overview
-========
-
 You may import the :py:class:`Generator` class to instantiate your generator
-with a sample text and a dictionary:
+with your own sample text and a dictionary:
 
 >>> from loremipsum import Generator
 >>> 
@@ -10,16 +7,16 @@ with a sample text and a dictionary:
 >>> dictionary = file('data/dictionary.txt').read().split()
 >>> 
 >>> g = Generator(sample, dictionary)
->>> g.generate_sentence(True)
-...
-
-or just import any of :py:func:`generate_sentences`,
-:py:func:`generate_paragraphs`, :py:func:`generate_words` which interface to a
-module wide :py:class:`Generator` instance.
-
->>> from loremipsum import generate_paragraphs, generate_sentences
+>>> g.generate_sentence() #doctest: +ELLIPSIS
+(...)
 >>> 
->>> generate_sentences(5)
+
+or just import :py:func:`get_sentences` or :py:func:`get_paragraphs`
+which interface to a module wide :py:class:`Generator` instance.
+
+>>> from loremipsum import get_paragraphs, get_sentences
+>>> 
+>>> get_sentences(5) #doctest: +ELLIPSIS
 ['...', '...', '...', '...', '...']
->>> generate_paragraphs(3)
+>>> get_paragraphs(3) #doctest: +ELLIPSIS
 ['...', '...', '...']

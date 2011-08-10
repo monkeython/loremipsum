@@ -7,5 +7,3 @@ Build
 Install
 =======
 
-Deploy
-======
