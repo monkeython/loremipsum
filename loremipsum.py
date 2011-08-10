@@ -8,7 +8,7 @@ import re
 from pkg_resources import resource_string
 
 __author__ = "Luca De Vitis <luca@monkeython.com>"
-__version__ = '0.1'
+__version__ = '1.0'
 __copyright__ = "2011, %s " % __author__
 __license__ = """
    Copyright (C) %s
