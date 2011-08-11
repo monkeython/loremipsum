@@ -2,10 +2,11 @@
 This module provide a simple way to generate "Lorem Ipsum" paragraphs,
 sentences, or just random words.
 """
-import math
 from random import normalvariate, choice
-import re
 from pkg_resources import resource_string
+import math
+import re
+import os
 
 __author__ = "Luca De Vitis <luca@monkeython.com>"
 __version__ = '1.0'
@@ -51,8 +52,8 @@ _SENTENCES_DELIMITERS = ['.', '?', '!']
 # "hello" with a comma next to it)
 _WORDS_DELIMITERS = [','] + _SENTENCES_DELIMITERS
 
-_SAMPLE = resource_string('loremipsum', 'data/sample.txt')
-_DICTIONARY = resource_string('loremipsum', 'data/dictionary.txt').split()
+_SAMPLE = resource_string('loremipsum', 'loremipsum/sample.txt')
+_DICTIONARY = resource_string('loremipsum', 'loremipsum/dictionary.txt').split()
 
 _LOREM_IPSUM = "lorem ipsum dolor sit amet, consecteteur adipiscing elit"
 

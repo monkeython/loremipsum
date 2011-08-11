@@ -28,9 +28,7 @@ egg = {
     'keywords': ['lorem', 'ipsum', 'text', 'generator'],
     'py_modules': [name],
     'requires': ['setuptools'],
-    'include_package_data': True,
-    'exclude_package_data': {name:
-        ['.gitignore', '*.rst', 'docs', 'tests', 'examples']},
+    'data_files': [(name, ('loremipsum/dictionary.txt', 'loremipsum/sample.txt'))],
     'test_suite': 'tests.suite' }
 
 if __name__ == '__main__':
