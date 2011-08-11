@@ -1,5 +1,5 @@
-from setuptools import setup
 import sys
+from setuptools import setup
 import os
 
 wd = os.path.dirname(os.path.abspath(__file__))
@@ -21,12 +21,11 @@ egg = {
     'version': module.__version__,
     'author': author,
     'author_email': email.strip('<>'),
-    'url': '%s/html' % url,
+    'url': url,
     'description': "A Lorem Ipsum text generator",
     'long_description': long_description,
-    'download_url': '%s/eggs/%s-%s-py%s.%s.egg' % \
-        ((url, name, module.__version__) + python_version),
     'classifiers': module.__classifiers__,
+    'keywords': ['lorem', 'ipsum', 'text', 'generator'],
     'py_modules': [name],
     'requires': ['setuptools'],
     'include_package_data': True,
