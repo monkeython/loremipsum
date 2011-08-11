@@ -1,4 +1,4 @@
-You may import the :py:class:`Generator` class to instantiate your generator
+You may import the **Generator** class to instantiate your generator
 with your own sample text and a dictionary:
 
 >>> from loremipsum import Generator
@@ -11,8 +11,8 @@ with your own sample text and a dictionary:
 (...)
 >>> 
 
-or just import :py:func:`get_sentences` or :py:func:`get_paragraphs`
-which interface to a module wide :py:class:`Generator` instance.
+or just import **get_sentences** or **get_paragraphs**
+which interface to a module wide **Generator** instance.
 
 >>> from loremipsum import get_paragraphs, get_sentences
 >>> 
