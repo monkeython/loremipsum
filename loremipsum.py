@@ -36,11 +36,13 @@ __doc__ = """
 """ % (' '.join(__doc__.splitlines()), __version__, __author__, __license__)
 __docformat__ = 'restructuredtext en'
 __classifiers__ = [
-    'Development Status :: 3 - Alpha',
+    'Development Status :: 5 - Production/Stable',
     'Intended Audience :: Developers',
     'License :: OSI Approved :: GNU General Public License (GPL)',
     'Operating System :: OS Independent',
-    'Topic :: Internet :: WWW/HTTP' ]
+    'Programming Language :: Python :: 2.6',
+    'Programming Language :: Python :: 2.7',
+    'Topic :: Software Development :: Libraries :: Python Modules']
 
 # Delimiters that mark ends of sentences
 _SENTENCES_DELIMITERS = ['.', '?', '!']
