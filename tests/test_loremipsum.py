@@ -1,6 +1,15 @@
 import loremipsum
 import unittest
 from types import GeneratorType
+from contextlib import contextmanager
+import sys
+
+@contextmanager
+def _assertRaises(self, exceptions):
+    try:
+        yield
+    except Exception, e:
+        self.assertTrue(isinstance(e, exceptions))
 
 class TestGenerator(unittest.TestCase):
 
@@ -8,22 +17,22 @@ class TestGenerator(unittest.TestCase):
         self.generator = loremipsum.Generator()
 
     def test_sample(self):
-        with self.assertRaises(loremipsum.SampleError):
+        with _assertRaises(self, loremipsum.SampleError):
             self.generator.sample = ' . , ! ? '
-        with self.assertRaises(loremipsum.SampleError):
+        with _assertRaises(self, loremipsum.SampleError):
             self.generator.sample = ''
         sample = self.generator.sample
         self.assertTrue(isinstance(sample, str))
 
     def test_dictionary(self):
-        with self.assertRaises(loremipsum.DictionaryError):
+        with _assertRaises(self, loremipsum.DictionaryError):
             self.generator.dictionary = []
         dictionary = self.generator.dictionary
         self.assertTrue(isinstance(dictionary, dict))
 
     def _test_sigma_mean(self, attr):
         self.assertTrue(isinstance(getattr(self.generator, attr), float))
-        with self.assertRaises(ValueError):
+        with _assertRaises(self, ValueError):
             setattr(self.generator, attr, -1)
 
     def test_sentence_sigma(self):
