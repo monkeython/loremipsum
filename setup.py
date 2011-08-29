@@ -1,5 +1,6 @@
+from __future__ import with_statement
 import sys
-from setuptools import setup
+from setuptools import setup, find_packages
 import os
 
 wd = os.path.dirname(os.path.abspath(__file__))
@@ -26,9 +27,13 @@ egg = {
     'long_description': long_description,
     'classifiers': module.__classifiers__,
     'keywords': ['lorem', 'ipsum', 'text', 'generator'],
-    'py_modules': [name],
-    'requires': ['setuptools'],
-    'data_files': [(name, ('loremipsum/dictionary.txt', 'loremipsum/sample.txt'))],
+    'setup_requires': ['distribute'],
+    'install_requires': ['distribute'],
+    'packages': [name],
+    # 'package_dir': {'': '.'},
+    # 'package_data': {'': 'default/*.txt'},
+    # 'data_files': [(name, ('default/dictionary.txt', 'default/sample.txt'))],
+    'include_package_data': True,
     'test_suite': 'tests.suite' }
 
 if __name__ == '__main__':
