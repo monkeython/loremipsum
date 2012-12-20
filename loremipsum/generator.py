@@ -288,7 +288,7 @@ class Generator(object):
         self.__words = list()
         for word in words:
             try:
-                word = str(word)
+                word = unicode(word)
             except TypeError:
                 continue
             else:
