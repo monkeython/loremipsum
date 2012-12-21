@@ -376,7 +376,7 @@ class Generator(object):
         # Finish the sentence off with capitalisation, a period and
         # form it into a string
         sentence = ' '.join(words).capitalize().rstrip(word_delimiter) + '.'
-        return (1, len(words), sentence)
+        return (1, len(words), unicode(sentence))
 
     def generate_sentences(self, amount, start_with_lorem=False):
         """
