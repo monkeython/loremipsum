@@ -4,7 +4,7 @@ import unittest
 class TestLoremIpsum(unittest.TestCase):
 
     def _test_text(self, text, start_with_lorem=False):
-        self.assertTrue(isinstance(text, str))
+        self.assertTrue(isinstance(text, unicode))
         self.assertEqual(text.startswith('Lorem ipsum'), start_with_lorem)
 
     def _test_get_function(self, function):

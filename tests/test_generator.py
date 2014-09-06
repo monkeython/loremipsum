@@ -53,7 +53,7 @@ class TestGenerator(unittest.TestCase):
         sentences, words, text = generated
         self.assertTrue(isinstance(sentences, int))
         self.assertTrue(isinstance(words, int))
-        self.assertTrue(isinstance(text, str))
+        self.assertTrue(isinstance(text, unicode))
         self.assertEqual(text.startswith('Lorem ipsum'), start_with_lorem)
 
     def _test_generators(self, method, start_with_lorem=False):
