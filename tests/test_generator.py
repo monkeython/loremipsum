@@ -4,12 +4,14 @@ import unittest
 from types import GeneratorType
 from contextlib import contextmanager
 
+
 @contextmanager
 def _assertRaises(self, exceptions):
     try:
         yield
     except Exception, e:
         self.assertTrue(isinstance(e, exceptions))
+
 
 class TestGenerator(unittest.TestCase):
 
@@ -63,7 +65,7 @@ class TestGenerator(unittest.TestCase):
         generated = 1
         for each in generator:
             self._test_generated(each)
-            generated +=1
+            generated += 1
         self.assertEqual(generated, 3)
 
     def test_generate_sentence(self):

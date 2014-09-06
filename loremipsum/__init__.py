@@ -1,7 +1,59 @@
-from .generator import Generator, DictionaryError, SampleError
+"""
+A Lorem Ipsum text generator
+============================
 
+You can access this documenation on the interactive python2 shell like this:
+
+>>> import loremipsum
+>>> print loremipsum.__doc__
+
+or with python3:
+
+>>> import loremipsum
+>>> print(loremipsum.__doc__)
+
+This package provides a text generator class and some utility functions that
+can simply return the text you desire. There are 2 sets of functions:
+
+* Those with **generate_** prefix that return the desired text and some stats
+* Those with **get_** that return the desired text without the stats
+
+On the average, you probably want to import the **get_** prefixed functions and
+just get the text:
+
+>>> from loremipsum import get_sentences
+>>>
+>>> sentences_list = get_sentences(5)
+>>> len(sentences_list)
+5
+>>>
+
+If you fancy some statistics, you want to import the **generate_**
+prefixed functions:
+
+>>> from loremipsum import generate_paragraph
+>>>
+>>> sentences_count, words_count, paragraph = generate_paragraph()
+
+If you need generate text based on your own sample text and/or dictionary, you
+want to import the **Generator** class:
+
+>>> from loremipsum import Generator
+>>>
+>>> with open('data/sample.txt', 'r') as sample_txt
+>>>     sample = sample_txt.read()
+>>> with open('data/dictionary.txt', 'r') as dictionary_txt
+>>>     dictionary = dictionary_txt.read().split()
+>>>
+>>> g = Generator(sample, dictionary)
+>>> sentence = g.get_sentence()
+>>>
+"""
+
+# The following (not so) special variables have been created for sphinx
+# conf.py and for setup.py
 __author__ = "Luca De Vitis <luca@monkeython.com>"
-__version__ = '1.0.2'
+__version__ = '1.0.3'
 __copyright__ = "2011, %s " % __author__
 __license__ = """
    Copyright (C) %s
@@ -19,14 +71,17 @@ __license__ = """
       You should have received a copy of the GNU General Public License
       along with this program.  If not, see <http://www.gnu.org/licenses/>
 """ % __copyright__
+
 __doc__ = """
 :version: %s
 :author: %s
-:organization: Monkeython
 :contact: http://www.monkeython.com
 :copyright: %s
-""" % (__version__, __author__, __license__)
+
+%s
+""" % (__version__, __author__, __license__, __doc__)
 __docformat__ = 'restructuredtext en'
+__keywords__ = ['lorem', 'ipsum', 'text', 'generator']
 __classifiers__ = [
     'Development Status :: 5 - Production/Stable',
     'Intended Audience :: Developers',
@@ -37,7 +92,23 @@ __classifiers__ = [
     'Programming Language :: Python :: 2.7',
     'Topic :: Software Development :: Libraries :: Python Modules']
 
+from .generator import Generator, DictionaryError, SampleError
+
+__all__ = [
+    'generate_sentence',
+    'generate_sentences',
+    'generate_paragraph',
+    'generate_paragraphs',
+    'get_sentence',
+    'get_sentences',
+    'get_paragraph',
+    'get_paragraphs',
+    'Generator',
+    'DictionaryError',
+    'SampleError']
+
 _generator = generator.Generator()
+
 
 def generate_sentence(start_with_lorem=False):
     """
@@ -50,6 +121,7 @@ def generate_sentence(start_with_lorem=False):
     :rtype: tuple(int, int, str)
     """
     return _generator.generate_sentence(start_with_lorem)
+
 
 def generate_sentences(amount, start_with_lorem=False):
     """
@@ -65,6 +137,7 @@ def generate_sentences(amount, start_with_lorem=False):
     """
     return _generator.generate_sentences(amount, start_with_lorem)
 
+
 def generate_paragraph(start_with_lorem=False):
     """
     Utility function to generate a single random paragraph with stats.
@@ -75,6 +148,7 @@ def generate_paragraph(start_with_lorem=False):
     :rtype: tuple(int, int, str)
     """
     return _generator.generate_paragraph(start_with_lorem)
+
 
 def generate_paragraphs(amount, start_with_lorem=False):
     """
@@ -88,6 +162,7 @@ def generate_paragraphs(amount, start_with_lorem=False):
     """
     return _generator.generate_paragraphs(amount, start_with_lorem)
 
+
 def get_sentence(start_with_lorem=False):
     """
     Utility function to get a single random sentence.
@@ -98,6 +173,7 @@ def get_sentence(start_with_lorem=False):
     :rtype: str
     """
     return _generator.generate_sentence(start_with_lorem)[-1]
+
 
 def get_sentences(amount, start_with_lorem=False):
     """
@@ -113,6 +189,7 @@ def get_sentences(amount, start_with_lorem=False):
     sentences = _generator.generate_sentences(amount, start_with_lorem)
     return [s[-1] for s in sentences]
 
+
 def get_paragraph(start_with_lorem=False):
     """
     Utility function to get a single random paragraph.
@@ -123,6 +200,7 @@ def get_paragraph(start_with_lorem=False):
     :rtype: str
     """
     return _generator.generate_paragraph(start_with_lorem)[-1]
+
 
 def get_paragraphs(amount, start_with_lorem=False):
     """

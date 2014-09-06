@@ -1,6 +1,7 @@
 import loremipsum
 import unittest
 
+
 class TestLoremIpsum(unittest.TestCase):
 
     def _test_text(self, text, start_with_lorem=False):
@@ -35,4 +36,3 @@ class TestLoremIpsum(unittest.TestCase):
 
     def test_get_paragraphs(self):
         self._test_iterators_function(loremipsum.get_paragraphs)
-

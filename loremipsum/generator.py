@@ -19,6 +19,7 @@ _DICTIONARY = resource_string(__name__, 'default/dictionary.txt').split()
 
 _LOREM_IPSUM = "lorem ipsum dolor sit amet, consecteteur adipiscing elit"
 
+
 def _paragraphs(text):
     """
     Splits a piece of text into paragraphs, separated by empty lines.
@@ -31,14 +32,16 @@ def _paragraphs(text):
             paragraphs.append([])
     return filter(None, [' '.join(p).strip() for p in paragraphs])
 
+
 def _sentences(text):
     """
-    Splits a piece of text into sentences, separated by periods, question 
+    Splits a piece of text into sentences, separated by periods, question
     marks and exclamation marks.
     """
     delimiters = '[%s]' % ''.join(['\\' + d for d in _SENTENCES_DELIMITERS])
     sentences = re.split(delimiters, text.strip())
     return filter(None, [s.strip() for s in sentences])
+
 
 def _mean(values):
     """
@@ -46,11 +49,13 @@ def _mean(values):
     """
     return sum(values) / float(max(len(values), 1))
 
+
 def _variance(values):
     """
     Calculate the variance for a list of integers.
     """
     return _mean([v**2 for v in values]) - _mean(values)**2
+
 
 def _sigma(values):
     """
@@ -58,12 +63,14 @@ def _sigma(values):
     """
     return math.sqrt(_variance(values))
 
+
 class DictionaryError(Exception):
     """
     The dictionary must be a list of one or more words.
     """
     def __str__(self):
         return self.__doc__
+
 
 class SampleError(Exception):
     """
@@ -74,13 +81,14 @@ class SampleError(Exception):
     def __str__(self):
         return self.__doc__
 
+
 class Generator(object):
     """
     Generates random strings of "lorem ipsum" text.
 
-    Markov chains are used to generate the random text based on the analysis 
-    of a sample text. In the analysis, only paragraph, sentence and word 
-    lengths, and some basic punctuation matter -- the actual words are 
+    Markov chains are used to generate the random text based on the analysis
+    of a sample text. In the analysis, only paragraph, sentence and word
+    lengths, and some basic punctuation matter -- the actual words are
     ignored. A provided list of words is then used to generate the random text,
     so that it will have a similar distribution of paragraph, sentence and word
     lengths.
@@ -96,7 +104,7 @@ class Generator(object):
     __dictionary = {}
 
     # Chains of three words that appear in the sample text
-    # Maps a pair of word-lengths to a third word-length and an optional 
+    # Maps a pair of word-lengths to a third word-length and an optional
     # piece of trailing punctuation (for example, a period, comma, etc.)
     __chains = {}
 
@@ -154,7 +162,7 @@ class Generator(object):
     def __set_sentence_sigma(self, sigma):
         if sigma < 0:
             raise ValueError('Standard deviation of sentence length must be '
-                'non-negative.')
+                             'non-negative.')
         self.__sentence_sigma = sigma
 
     sentence_sigma = property(__get_sentence_sigma, __set_sentence_sigma)
@@ -191,7 +199,7 @@ class Generator(object):
     def __set_paragraph_sigma(self, sigma):
         if sigma < 0:
             raise ValueError('Standard deviation of paragraph length must be '
-                'non-negative.')
+                             'non-negative.')
         self.__paragraph_sigma = sigma
 
     paragraph_sigma = property(__get_paragraph_sigma, __set_paragraph_sigma)
@@ -212,11 +220,11 @@ class Generator(object):
         """
         The sample text that generated sentences are based on.
 
-        Sentences are generated so that they will have a similar distribution 
+        Sentences are generated so that they will have a similar distribution
         of word, sentence and paragraph lengths and punctuation.
 
-        Sample text should be a string consisting of a number of paragraphs, 
-        each separated by empty lines. Each paragraph should consist of a 
+        Sample text should be a string consisting of a number of paragraphs,
+        each separated by empty lines. Each paragraph should consist of a
         number of sentences, separated by periods, exclamation marks and/or
         question marks. Sentences consist of words, separated by white space.
 
@@ -239,7 +247,7 @@ class Generator(object):
             length, delimiter = len(word), ''
             for d in _WORDS_DELIMITERS:
                 if word.endswith(d):
-                    length, delimiter = length -1, delimiter
+                    length, delimiter = length - 1, delimiter
                     break
             if length > 0:
                 chains.setdefault(previous, []).append((length, delimiter))
@@ -254,7 +262,7 @@ class Generator(object):
             # Calculates the mean and standard deviation of the lengths of
             # sentences (in words) in a sample text.
             sentences = filter(None, [s.strip() for s in _sentences(sample)])
-            sentences_lengths = [len(s.split()) for s in sentences ]
+            sentences_lengths = [len(s.split()) for s in sentences]
             self.__generated_sentence_mean = _mean(sentences_lengths)
             self.__generated_sentence_sigma = _sigma(sentences_lengths)
 
@@ -324,7 +332,8 @@ class Generator(object):
         previous = ()
         last_word = ''
 
-        word_delimiter = '' # Defined here in case while loop doesn't run
+        # Defined here in case while loop doesn't run
+        word_delimiter = ''
 
         # Start the sentence with "Lorem ipsum...", if desired
         if start_with_lorem:
@@ -336,7 +345,7 @@ class Generator(object):
         # Generate a sentence from the "chains"
         for w in xrange(sentence_length - len(words)):
             # If the current starting point is invalid, choose another randomly
-            if (not self.__chains.has_key(previous)):
+            if previous not in self.__chains:
                 starts = set(self.__starts)
                 chains = set(self.__chains.keys())
                 previous = choice(list(chains.intersection(starts)))
@@ -400,14 +409,15 @@ class Generator(object):
         :type start_with_lorem: bool
         """
 
-        # The length of the paragraph is a normally distributed random variable.
+        # The length of the paragraph is a normally distributed random
+        # variable.
         mean, sigma = self.paragraph_mean, self.paragraph_sigma
         sentences = max(2, int(round(normalvariate(mean, sigma))))
 
         words = 0
         paragraph = []
-        generate = self.generate_sentences
-        for void, word_count, sentence in generate(sentences, start_with_lorem):
+        generator = self.generate_sentences(sentences, start_with_lorem)
+        for void, word_count, sentence in generator:
             words += word_count
             paragraph.append(sentence)
 
@@ -425,4 +435,3 @@ class Generator(object):
         yield self.generate_paragraph(start_with_lorem)
         for p in xrange(amount - 1):
             yield self.generate_paragraph()
-
