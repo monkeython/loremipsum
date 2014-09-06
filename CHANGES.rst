@@ -1,3 +1,5 @@
+1.0.3
+   * Fix issue #5
 1.0.2
    * Now is a package: fixes datafiles distribution.
 1.0.1

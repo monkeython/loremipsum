@@ -1,3 +1,6 @@
+A Lorem Ipsum text generator
+============================
+
 You may import the **Generator** class to instantiate your generator
 with your own sample text and a dictionary:
 
