@@ -366,8 +366,9 @@ class Generator(object):
 
             # Readability. No word can appear next to itself.
             word = choice(list(self.__dictionary[closest]))
-            while word == last_word:
-                word = choice(list(self.__dictionary[closest]))
+            if len(self.__dictionary[closest]) > 1:
+                while word == last_word:
+                    word = choice(list(self.__dictionary[closest]))
             last_word = word
 
             words.append(word + word_delimiter)
