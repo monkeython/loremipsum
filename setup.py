@@ -1,37 +1,40 @@
+"""
+python setup.py bdist_egg
+"""
 import sys
 from setuptools import setup
 import os
 
-wd = os.path.dirname(os.path.abspath(__file__))
-os.chdir(wd)
-sys.path.insert(1, wd)
+WD = os.path.dirname(os.path.abspath(__file__))
+os.chdir(WD)
+sys.path.insert(1, WD)
 
-name = 'loremipsum'
-package = __import__(name)
-author, email = package.__author__.rsplit(' ', 1)
+NAME = 'loremipsum'
+PACKAGE = __import__(NAME)
+AUTHOR, EMAIL = PACKAGE.__author__.rsplit(' ', 1)
 
-with open('README.rst', 'r') as readme:
-    description = readme.readline().strip()
-    long_description = ''.join((description, readme.read()))
+with open('README.rst', 'r') as README:
+    DESCRIPTION = README.readline().strip()
+    LONG_DESCRIPTION = ''.join((DESCRIPTION, README.read()))
 
-url = 'http://projects.monkeython.com/%s' % name
+URL = 'http://projects.monkeython.com/%s' % NAME
 
-egg = {
-    'name': name,
-    'version': package.__version__,
-    'author': author,
-    'author_email': email.strip('<>'),
-    'url': url,
-    'description': description,
-    'long_description': long_description,
-    'classifiers': package.__classifiers__,
-    'keywords': package.__keywords__,
+EGG = {
+    'name': NAME,
+    'version': PACKAGE.__version__,
+    'author': AUTHOR,
+    'author_email': EMAIL.strip('<>'),
+    'url': URL,
+    'description': DESCRIPTION,
+    'long_description': LONG_DESCRIPTION,
+    'classifiers': PACKAGE.__classifiers__,
+    'keywords': PACKAGE.__keywords__,
     'setup_requires': ['distribute'],
     'install_requires': ['distribute'],
-    'packages': [name],
+    'packages': [NAME],
     'include_package_data': True,
     'test_suite': 'tests.suite'
 }
 
 if __name__ == '__main__':
-    setup(**egg)
+    setup(**EGG)

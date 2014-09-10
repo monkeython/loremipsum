@@ -107,7 +107,7 @@ __all__ = [
     'DictionaryError',
     'SampleError']
 
-_generator = generator.Generator()
+_generator = Generator()
 
 
 def generate_sentence(start_with_lorem=False):
