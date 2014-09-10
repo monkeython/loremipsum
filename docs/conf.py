@@ -179,4 +179,4 @@ html_use_opensearch = ''
 # html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'PythonmusiXmatchdoc'
+# htmlhelp_basename = 'PythonmusiXmatchdoc'
