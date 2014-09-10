@@ -54,7 +54,7 @@ want to import the **Generator** class:
 # conf.py and for setup.py
 __author__ = "Luca De Vitis <luca@monkeython.com>"
 __version__ = '1.0.3'
-__copyright__ = "2011, %s " % __author__
+__copyright__ = "2011-2014, %s " % __author__
 __license__ = """
    Copyright (C) %s
 
@@ -107,7 +107,7 @@ __all__ = [
     'DictionaryError',
     'SampleError']
 
-_generator = Generator()
+_GENERATOR = Generator()
 
 
 def generate_sentence(start_with_lorem=False):
@@ -120,7 +120,7 @@ def generate_sentence(start_with_lorem=False):
     :returns: a tuple with amount of sentences, words and the text
     :rtype: tuple(int, int, str)
     """
-    return _generator.generate_sentence(start_with_lorem)
+    return _GENERATOR.generate_sentence(start_with_lorem)
 
 
 def generate_sentences(amount, start_with_lorem=False):
@@ -135,7 +135,7 @@ def generate_sentences(amount, start_with_lorem=False):
     :returns: a tuple with amount of sentences, words and the text
     :rtype: tuple(int, int, str)
     """
-    return _generator.generate_sentences(amount, start_with_lorem)
+    return _GENERATOR.generate_sentences(amount, start_with_lorem)
 
 
 def generate_paragraph(start_with_lorem=False):
@@ -147,7 +147,7 @@ def generate_paragraph(start_with_lorem=False):
     :returns: a tuple with amount of sentences, words and the text
     :rtype: tuple(int, int, str)
     """
-    return _generator.generate_paragraph(start_with_lorem)
+    return _GENERATOR.generate_paragraph(start_with_lorem)
 
 
 def generate_paragraphs(amount, start_with_lorem=False):
@@ -160,7 +160,7 @@ def generate_paragraphs(amount, start_with_lorem=False):
     :returns: a tuple with amount of sentences, words and the text
     :rtype: tuple(int, int, str)
     """
-    return _generator.generate_paragraphs(amount, start_with_lorem)
+    return _GENERATOR.generate_paragraphs(amount, start_with_lorem)
 
 
 def get_sentence(start_with_lorem=False):
@@ -172,7 +172,7 @@ def get_sentence(start_with_lorem=False):
     :returns: a random sentence
     :rtype: str
     """
-    return _generator.generate_sentence(start_with_lorem)[-1]
+    return _GENERATOR.generate_sentence(start_with_lorem)[-1]
 
 
 def get_sentences(amount, start_with_lorem=False):
@@ -186,7 +186,7 @@ def get_sentences(amount, start_with_lorem=False):
     :returns: a list of random sentences.
     :rtype: list
     """
-    sentences = _generator.generate_sentences(amount, start_with_lorem)
+    sentences = _GENERATOR.generate_sentences(amount, start_with_lorem)
     return [s[-1] for s in sentences]
 
 
@@ -199,7 +199,7 @@ def get_paragraph(start_with_lorem=False):
     :returns: a random paragrpah
     :rtype: str
     """
-    return _generator.generate_paragraph(start_with_lorem)[-1]
+    return _GENERATOR.generate_paragraph(start_with_lorem)[-1]
 
 
 def get_paragraphs(amount, start_with_lorem=False):
@@ -211,5 +211,5 @@ def get_paragraphs(amount, start_with_lorem=False):
     :returns: a list of random paragraphs
     :rtype: list
     """
-    paragraphs = _generator.generate_paragraphs(amount, start_with_lorem)
+    paragraphs = _GENERATOR.generate_paragraphs(amount, start_with_lorem)
     return [p[-1] for p in paragraphs]

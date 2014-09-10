@@ -2,17 +2,18 @@
 This module provides a simple way to generate "Lorem Ipsum" paragraphs,
 sentences, or just random words.
 """
+
 from random import normalvariate, choice
 from pkg_resources import resource_string
 import math
 import re
-import os
+
 # Delimiters that mark ends of sentences
-_SENTENCES_DELIMITERS = ['.', '?', '!']
+_SENTENCE_DELIMITERS = ['.', '?', '!']
 
 # Delimiters which do not form parts of words (i.e. "hello," is the word
 # "hello" with a comma next to it)
-_WORDS_DELIMITERS = [','] + _SENTENCES_DELIMITERS
+_WORD_DELIMITERS = [','] + _SENTENCE_DELIMITERS
 
 _SAMPLE = resource_string(__name__, 'default/sample.txt')
 _DICTIONARY = resource_string(__name__, 'default/dictionary.txt').split()
@@ -30,7 +31,7 @@ def _paragraphs(text):
             paragraphs[-1].append(line)
         elif paragraphs[-1]:
             paragraphs.append([])
-    return filter(None, [' '.join(p).strip() for p in paragraphs])
+    return [' '.join(lines).strip() for lines in paragraphs]
 
 
 def _sentences(text):
@@ -38,9 +39,9 @@ def _sentences(text):
     Splits a piece of text into sentences, separated by periods, question
     marks and exclamation marks.
     """
-    delimiters = '[%s]' % ''.join(['\\' + d for d in _SENTENCES_DELIMITERS])
+    delimiters = '[%s]' % ''.join(['\\' + d for d in _SENTENCE_DELIMITERS])
     sentences = re.split(delimiters, text.strip())
-    return filter(None, [s.strip() for s in sentences])
+    return [s.strip() for s in sentences if s.strip()]
 
 
 def _mean(values):
@@ -101,15 +102,18 @@ class Generator(object):
 
     # Words that can be used in the generated output
     # Maps a word-length to a list of words of that length
-    __dictionary = {}
+    __dictionary = dict()
+
+    # The bare list of words
+    __words = list()
 
     # Chains of three words that appear in the sample text
     # Maps a pair of word-lengths to a third word-length and an optional
     # piece of trailing punctuation (for example, a period, comma, etc.)
-    __chains = {}
+    __chains = dict()
 
     # Pairs of word-lengths that can appear at the beginning of sentences
-    __starts = []
+    __starts = list()
 
     # Sample that the generated text is based on
     __sample = ""
@@ -142,6 +146,9 @@ class Generator(object):
         return self.__sentence_mean
 
     def __set_sentence_mean(self, mean):
+        """
+        Set sentence mean.
+        """
         if mean < 0:
             raise ValueError('Mean sentence length must be non-negative.')
         self.__sentence_mean = mean
@@ -160,6 +167,9 @@ class Generator(object):
         return self.__sentence_sigma
 
     def __set_sentence_sigma(self, sigma):
+        """
+        Set sentence sigma.
+        """
         if sigma < 0:
             raise ValueError('Standard deviation of sentence length must be '
                              'non-negative.')
@@ -179,6 +189,9 @@ class Generator(object):
         return self.__paragraph_mean
 
     def __set_paragraph_mean(self, mean):
+        """
+        Set paragraph mean.
+        """
         if mean < 0:
             raise ValueError('Mean paragraph length must be non-negative.')
         self.__paragraph_mean = mean
@@ -197,6 +210,9 @@ class Generator(object):
         return self.__paragraph_sigma
 
     def __set_paragraph_sigma(self, sigma):
+        """
+        Set paragraph sigma.
+        """
         if sigma < 0:
             raise ValueError('Standard deviation of paragraph length must be '
                              'non-negative.')
@@ -206,7 +222,7 @@ class Generator(object):
 
     def reset_statistics(self):
         """
-        Returns the values of :py:attr:`sentence_mean`,
+        Resets the values of :py:attr:`sentence_mean`,
         :py:attr:`sentence_sigma`, :py:attr:`paragraph_mean`, and
         :py:attr:`paragraph_sigma` to their values as calculated from the
         sample text.
@@ -236,6 +252,9 @@ class Generator(object):
         return self.__sample
 
     def __set_sample(self, sample):
+        """
+        Set sample text.
+        """
         words = sample.split()
         previous = (0, 0)
         chains = {}
@@ -245,8 +264,8 @@ class Generator(object):
         # generation.
         for word in words:
             length, delimiter = len(word), ''
-            for d in _WORDS_DELIMITERS:
-                if word.endswith(d):
+            for word_delimiter in _WORD_DELIMITERS:
+                if word.endswith(word_delimiter):
                     length, delimiter = length - 1, delimiter
                     break
             if length > 0:
@@ -261,14 +280,14 @@ class Generator(object):
 
             # Calculates the mean and standard deviation of the lengths of
             # sentences (in words) in a sample text.
-            sentences = filter(None, [s.strip() for s in _sentences(sample)])
+            sentences = _sentences(sample)
             sentences_lengths = [len(s.split()) for s in sentences]
             self.__generated_sentence_mean = _mean(sentences_lengths)
             self.__generated_sentence_sigma = _sigma(sentences_lengths)
 
             # Calculates the mean and standard deviation of the lengths of
             # paragraphs (in sentences) in a sample text.
-            paragraphs = filter(None, [p.strip() for p in _paragraphs(sample)])
+            paragraphs = _paragraphs(sample)
             paragraphs_lengths = [len(_sentences(p)) for p in paragraphs]
             self.__generated_paragraph_mean = _mean(paragraphs_lengths)
             self.__generated_paragraph_sigma = _sigma(paragraphs_lengths)
@@ -292,6 +311,9 @@ class Generator(object):
         return self.__dictionary.copy()
 
     def __set_dictionary(self, words):
+        """
+        Set dictionary.
+        """
         self.__dictionary = dict()
         self.__words = list()
         for word in words:
@@ -339,11 +361,12 @@ class Generator(object):
         if start_with_lorem:
             words.extend(_LOREM_IPSUM.split()[:sentence_length])
             last_char = words[-1][-1]
-            if last_char in _WORDS_DELIMITERS:
+            if last_char in _WORD_DELIMITERS:
                 word_delimiter = last_char
 
         # Generate a sentence from the "chains"
-        for w in xrange(sentence_length - len(words)):
+        need, more_words = next, iter(range(sentence_length - len(words)))
+        while need(more_words, False) is not False:
             # If the current starting point is invalid, choose another randomly
             if previous not in self.__chains:
                 starts = set(self.__starts)
@@ -360,7 +383,7 @@ class Generator(object):
             # delimiter, then we don't include it because we don't want the
             # sentence to end prematurely (we want the length to match the
             # sentence_length value).
-            if chain[1] in _SENTENCES_DELIMITERS:
+            if chain[1] in _SENTENCE_DELIMITERS:
                 word_delimiter = ''
             else:
                 word_delimiter = chain[1]
@@ -375,9 +398,8 @@ class Generator(object):
 
             # Readability. No word can appear next to itself.
             word = choice(list(self.__dictionary[closest]))
-            if len(self.__dictionary[closest]) > 1:
-                while word == last_word:
-                    word = choice(list(self.__dictionary[closest]))
+            while word == last_word and len(self.__dictionary[closest]) > 1:
+                word = choice(list(self.__dictionary[closest]))
             last_word = word
 
             words.append(word + word_delimiter)
@@ -397,7 +419,8 @@ class Generator(object):
         :type start_with_lorem: bool
         """
         yield self.generate_sentence(start_with_lorem)
-        for s in xrange(amount - 1):
+        need, more_sentences = next, iter(range(amount - 1))
+        while need(more_sentences, False) is not False:
             yield self.generate_sentence()
 
     def generate_paragraph(self, start_with_lorem=False):
@@ -433,5 +456,6 @@ class Generator(object):
         :type start_with_lorem: bool
         """
         yield self.generate_paragraph(start_with_lorem)
-        for p in xrange(amount - 1):
+        need, more_paragraphs = next, iter(range(amount - 1))
+        while need(more_paragraphs, False) is not False:
             yield self.generate_paragraph()
