@@ -1,25 +1,12 @@
 A Lorem Ipsum text generator
 ============================
 
-You may import the **Generator** class to instantiate your generator
-with your own sample text and a dictionary:
+The purpose of this package is to generate random (plausible) text sentences
+and paargraphs based on a dictionary and a sample text. By default this package
+will generate `Lorem Ipsum`_ style text, but you can customize the generator to
+effectively load any dictionary and any sample text you like.
 
->>> from loremipsum import Generator
->>> 
->>> sample = file('data/sample.txt').read()
->>> dictionary = file('data/dictionary.txt').read().split()
->>> 
->>> g = Generator(sample, dictionary)
->>> g.generate_sentence() #doctest: +ELLIPSIS
-(...)
->>> 
+This package has en extensive docstring documentation, so you can read more on
+the online documentation or in the python interactive shell as well.
 
-or just import **get_sentences** or **get_paragraphs**
-which interface to a module wide **Generator** instance.
-
->>> from loremipsum import get_paragraphs, get_sentences
->>> 
->>> get_sentences(5) #doctest: +ELLIPSIS
-['...', '...', '...', '...', '...']
->>> get_paragraphs(3) #doctest: +ELLIPSIS
-['...', '...', '...']
+.. _`Lorem Ipsum`: http://en.wikipedia.org/wiki/Lorem_ipsum

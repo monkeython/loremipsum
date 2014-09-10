@@ -5,10 +5,12 @@ loremipsum
 
 Overview
 ========
+
 .. include:: ../README.rst
 
 API
 ===
+
 .. autoexception:: loremipsum.SampleError
 
 .. autoexception:: loremipsum.DictionaryError
@@ -32,10 +34,9 @@ API
 
 .. autofunction:: get_paragraphs
 
-.. include:: ../INSTALL.rst
-
 History
 =======
+
 .. include:: ../HISTORY.rst
 
 Changelog
