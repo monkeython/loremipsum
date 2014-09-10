@@ -1,9 +1,0 @@
-Download
-========
-
-Build
-=====
-
-Install
-=======
-
