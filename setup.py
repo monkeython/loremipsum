@@ -29,8 +29,6 @@ EGG = {
     'long_description': LONG_DESCRIPTION,
     'classifiers': PACKAGE.__classifiers__,
     'keywords': PACKAGE.__keywords__,
-#    'setup_requires': ['distribute'],
-#    'install_requires': ['distribute'],
     'packages': [NAME],
     'include_package_data': True,
     'test_suite': 'tests.suite'

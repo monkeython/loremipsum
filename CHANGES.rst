@@ -1,3 +1,7 @@
+1.0.4
+   * Added MANIFEST.in
+   * Removed dependencies on distribute
+   * Applied pep8 and pylint suggested cleanup
 1.0.3
    * Fix issue #5
 1.0.2
