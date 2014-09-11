@@ -1,3 +1,2 @@
 pep8
 pylint
-Sphinx
