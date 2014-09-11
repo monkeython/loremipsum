@@ -1,1 +1,2 @@
 recursive-include loremipsum/default *.txt
+include README.rst
