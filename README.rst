@@ -3,29 +3,25 @@
     :target: https://travis-ci.org/monkeython/loremipsum
     :alt: Build status
 
+.. image:: https://readthedocs.org/projects/loremipsum/badge/?version=latest
+    :target: http://loremipsum.readthedocs.org/en/latest/
+    :alt: Documentation status
+
 .. image:: https://pypip.in/download/loremipsum/badge.svg?period=month
-    :target: https://pypi.python.org/pypi//loremipsum/
+    :target: https://pypi.python.org/pypi/loremipsum/
     :alt: Downloads
 
 .. image:: https://pypip.in/version/loremipsum/badge.svg?text=pypi
     :target: https://pypi.python.org/pypi/loremipsum/
     :alt: Latest Version
 
-.. image:: https://pypip.in/py_versions/loremipsum/badge.svg
-    :target: https://pypi.python.org/pypi/loremipsum/
-    :alt: Supported Python versions
-
-.. image:: https://pypip.in/implementation/loremipsum/badge.svg
-    :target: https://pypi.python.org/pypi/loremipsum/
-    :alt: Supported Python implementations
-
 .. image:: https://pypip.in/status/loremipsum/badge.svg
     :target: https://pypi.python.org/pypi/loremipsum/
     :alt: Development Status
 
-.. image:: https://pypip.in/license/loremipsum/badge.svg
+.. image:: https://pypip.in/py_versions/loremipsum/badge.svg
     :target: https://pypi.python.org/pypi/loremipsum/
-    :alt: License
+    :alt: Supported Python versions
 
 .. image:: https://pypip.in/egg/loremipsum/badge.svg
     :target: https://pypi.python.org/pypi/loremipsum/
@@ -34,6 +30,14 @@
 .. image:: https://pypip.in/wheel/loremipsum/badge.svg
     :target: https://pypi.python.org/pypi/loremipsum/
     :alt: Wheel Status
+
+.. .. image:: https://pypip.in/license/loremipsum/badge.svg
+..     :target: https://pypi.python.org/pypi/loremipsum/
+..     :alt: License
+.. 
+.. .. image:: https://pypip.in/implementation/loremipsum/badge.svg
+..     :target: https://pypi.python.org/pypi/loremipsum/
+..     :alt: Supported Python implementations
 
 The purpose of this package is to generate random (plausible) text sentences
 and paargraphs based on a dictionary and a sample text. By default this package
