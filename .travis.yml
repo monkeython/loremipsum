@@ -14,4 +14,4 @@ script:
     - python setup.py test
     - pep8 loremipsum
     - pylint -E --rcfile .pylintrc loremipsum
-    - python setup.py build_sphinx
+#     - python setup.py build_sphinx
