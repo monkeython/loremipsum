@@ -7,6 +7,10 @@ from random import normalvariate, choice
 from pkg_resources import resource_string
 import math
 import re
+import sys
+if sys.version_info[:2] == (3,2):
+    from functools import partial
+    unicode = partial(str, encoding='utf-8')
 
 # Delimiters that mark ends of sentences
 _SENTENCE_DELIMITERS = ['.', '?', '!']
@@ -131,7 +135,7 @@ class Generator(object):
     __generated_paragraph_sigma = 0
 
     def __init__(self, sample=None, dictionary=None):
-        self.sample = sample or _SAMPLE
+        self.sample = unicode(sample or _SAMPLE)
         self.dictionary = dictionary or _DICTIONARY
 
     def __get_sentence_mean(self):
@@ -390,7 +394,7 @@ class Generator(object):
 
             # Choose a word randomly that matches (or closely matches) the
             # length we're after.
-            lengths = self.__dictionary.keys()
+            lengths = list(self.__dictionary.keys())
             closest = lengths[0]
             for length in lengths:
                 if abs(word_length - length) < abs(word_length - closest):
@@ -408,7 +412,7 @@ class Generator(object):
         # Finish the sentence off with capitalisation, a period and
         # form it into a string
         sentence = ' '.join(words).capitalize().rstrip(word_delimiter) + '.'
-        return (1, len(words), unicode(sentence))
+        return (1, len(words), sentence)
 
     def generate_sentences(self, amount, start_with_lorem=False):
         """

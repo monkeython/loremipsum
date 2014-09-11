@@ -1,6 +1,6 @@
 from unittest import defaultTestLoader, TestSuite
-import test_generator
-import test_functions
+from . import test_generator
+from . import test_functions
 
 suite = TestSuite()
 suite.addTest(defaultTestLoader.loadTestsFromModule(test_generator))
