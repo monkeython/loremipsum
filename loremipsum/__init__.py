@@ -1,17 +1,4 @@
 """
-A Lorem Ipsum text generator
-============================
-
-You can access this documenation on the interactive python2 shell like this:
-
->>> import loremipsum
->>> print loremipsum.__doc__
-
-or with python3:
-
->>> import loremipsum
->>> print(loremipsum.__doc__)
-
 This package provides a text generator class and some utility functions that
 can simply return the text you desire. There are 2 sets of functions:
 
@@ -55,31 +42,6 @@ want to import the **Generator** class:
 __author__ = "Luca De Vitis <luca@monkeython.com>"
 __version__ = '1.0.4'
 __copyright__ = "2011-2014, %s " % __author__
-__license__ = """
-   Copyright (C) %s
-
-      This program is free software: you can redistribute it and/or modify
-      it under the terms of the GNU General Public License as published by
-      the Free Software Foundation, either version 3 of the License, or
-      (at your option) any later version.
-
-      This program is distributed in the hope that it will be useful,
-      but WITHOUT ANY WARRANTY; without even the implied warranty of
-      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-      GNU General Public License for more details.
-
-      You should have received a copy of the GNU General Public License
-      along with this program.  If not, see <http://www.gnu.org/licenses/>
-""" % __copyright__
-
-__doc__ = """
-:version: %s
-:author: %s
-:contact: http://www.monkeython.com
-:copyright: %s
-
-%s
-""" % (__version__, __author__, __license__, __doc__)
 __docformat__ = 'restructuredtext en'
 __keywords__ = ['lorem', 'ipsum', 'text', 'generator']
 __classifiers__ = [

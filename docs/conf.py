@@ -49,6 +49,12 @@ templates_path = ['_templates']
 # The suffix of source filenames.
 source_suffix = '.rst'
 
+rst_epilog = """
+.. |author| replace:: %s
+.. |contact| replace:: http://www.monkeython.com
+.. |copyright| replace:: %s
+""" % (loremipsum.__author__, loremipsum.__copyright__)
+
 # The encoding of source files.
 # source_encoding = 'utf-8-sig'
 
@@ -178,5 +184,3 @@ html_use_opensearch = ''
 # This is the file name suffix for HTML files (e.g. ".xhtml").
 # html_file_suffix = None
 
-# Output file base name for HTML help builder.
-# htmlhelp_basename = 'PythonmusiXmatchdoc'

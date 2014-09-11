@@ -1,3 +1,6 @@
+Changes
+=======
+
 1.0.4
    * Added MANIFEST.in
    * Removed dependencies on distribute

@@ -1,8 +1,7 @@
-A Lorem Ipsum text generator
-============================
 
 .. image:: https://travis-ci.org/monkeython/loremipsum.svg?branch=master
     :target: https://travis-ci.org/monkeython/loremipsum
+    :alt: Build status
 
 .. image:: https://pypip.in/download/loremipsum/badge.svg?period=month
     :target: https://pypi.python.org/pypi//loremipsum/

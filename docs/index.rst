@@ -1,22 +1,41 @@
-loremipsum
-==========
+****************************
+A Lorem Ipsum text generator
+****************************
 
-.. automodule:: loremipsum
+:version: |version|
+:author: |author|
+:contact: |contact|
+:copyright: |copyright|
+
+.. include:: ../LICENSE.rst
 
 Overview
 ========
 
 .. include:: ../README.rst
 
+.. include:: ../HISTORY.rst
+
+.. include:: ../CHANGES.rst
+
+***
 API
-===
+***
+
+Basic usage
+===========
+
+.. automodule:: loremipsum
+
+Exceptions
+==========
 
 .. autoexception:: loremipsum.SampleError
 
 .. autoexception:: loremipsum.DictionaryError
 
-.. autoclass:: loremipsum.Generator
-   :members: 
+Functions
+=========
 
 .. autofunction:: generate_sentence
 
@@ -34,15 +53,11 @@ API
 
 .. autofunction:: get_paragraphs
 
-History
-=======
+The Generator class
+===================
 
-.. include:: ../HISTORY.rst
-
-Changelog
-=========
-
-.. include:: ../CHANGES.rst
+.. autoclass:: loremipsum.Generator
+   :members: 
 
 Indices and tables
 ==================
