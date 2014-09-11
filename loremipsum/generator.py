@@ -8,7 +8,7 @@ from pkg_resources import resource_string
 import math
 import re
 import sys
-if sys.version_info[:2] == (3,2):
+if sys.version_info[:2] == (3, 2):
     from functools import partial
     unicode = partial(str, encoding='utf-8')
 
