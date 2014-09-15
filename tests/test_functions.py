@@ -1,14 +1,15 @@
 import loremipsum
 import unittest
 import sys
-# if sys.version_info[:2] == (3,2):
-#     unicode = str
+
+if sys.version_info[0] == 3:
+    unicode = str
 
 
 class TestLoremIpsum(unittest.TestCase):
 
     def _test_text(self, text, start_with_lorem=False):
-#         self.assertTrue(isinstance(text, unicode))
+        self.assertTrue(isinstance(text, unicode))
         self.assertEqual(text.startswith('Lorem ipsum'), start_with_lorem)
 
     def _test_get_function(self, function):

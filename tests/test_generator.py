@@ -1,8 +1,11 @@
-from __future__ import with_statement
 import loremipsum
 import unittest
 from types import GeneratorType
 from contextlib import contextmanager
+import sys
+
+if sys.version_info[0] == 3:
+    unicode = str
 
 
 @contextmanager
@@ -24,7 +27,7 @@ class TestGenerator(unittest.TestCase):
         with _assertRaises(self, loremipsum.SampleError):
             self.generator.sample = ''
         sample = self.generator.sample
-#         self.assertTrue(isinstance(sample, str))
+        self.assertTrue(isinstance(sample, unicode))
 
     def test_dictionary(self):
         with _assertRaises(self, loremipsum.DictionaryError):
@@ -55,7 +58,7 @@ class TestGenerator(unittest.TestCase):
         sentences, words, text = generated
         self.assertTrue(isinstance(sentences, int))
         self.assertTrue(isinstance(words, int))
-#        self.assertTrue(isinstance(text, str))
+        self.assertTrue(isinstance(text, unicode))
         self.assertEqual(text.startswith('Lorem ipsum'), start_with_lorem)
 
     def _test_generators(self, method, start_with_lorem=False):

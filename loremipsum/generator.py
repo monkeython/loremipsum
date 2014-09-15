@@ -3,14 +3,17 @@ This module provides a simple way to generate "Lorem Ipsum" paragraphs,
 sentences, or just random words.
 """
 
+from __future__ import unicode_literals
 from random import normalvariate, choice
 from pkg_resources import resource_string
 import math
 import re
 import sys
+
+
 if sys.version_info[0] == 3:
-    from functools import partial
-    unicode = partial(str, encoding='utf-8')
+    unicode = str
+
 
 # Delimiters that mark ends of sentences
 _SENTENCE_DELIMITERS = ['.', '?', '!']
@@ -22,7 +25,7 @@ _WORD_DELIMITERS = [','] + _SENTENCE_DELIMITERS
 _SAMPLE = resource_string(__name__, 'default/sample.txt')
 _DICTIONARY = resource_string(__name__, 'default/dictionary.txt').split()
 
-_LOREM_IPSUM = "lorem ipsum dolor sit amet, consecteteur adipiscing elit"
+_LOREM_IPSUM = 'lorem ipsum dolor sit amet, consecteteur adipiscing elit'
 
 
 def _paragraphs(text):
