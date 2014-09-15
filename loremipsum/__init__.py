@@ -40,7 +40,7 @@ want to import the **Generator** class:
 # The following (not so) special variables have been created for sphinx
 # conf.py and for setup.py
 __author__ = "Luca De Vitis <luca@monkeython.com>"
-__version__ = '1.0.4'
+__version__ = '1.0.5'
 __copyright__ = "2011-2014, %s " % __author__
 __docformat__ = 'restructuredtext en'
 __keywords__ = ['lorem', 'ipsum', 'text', 'generator']
