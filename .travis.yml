@@ -1,17 +1,23 @@
 language: python
 python:
-    - "2.6"
-    - "2.7"
-    - "pypy"
-    - "3.2"
-    - "3.3"
-    - "3.4"
-# command to install dependencies
+  - '2.6'
+  - '2.7'
+  - '3.2'
+  - '3.3'
+  - '3.4'
+  - 'pypy'
+  - 'pypy3'
 install: pip install -r build_requirements.txt
-# command to run tests
 script:
-    - python setup.py bdist_egg
-    - python setup.py test
-    - pep8 loremipsum
-    - pylint -E --rcfile .pylintrc loremipsum
-#     - python setup.py build_sphinx
+  - python setup.py bdist_egg
+  - python setup.py test
+  - pep8 loremipsum
+  - pylint -E --rcfile .pylintrc loremipsum
+deploy:
+  provider: pypi
+  user: monkeython
+  password:
+    secure: el+nlWhEjos4ofYJJf+FrU4H9o28bzLzsu3wW+xx8mPZHE/vY33WEniLSqI7wION+KlRXCVASa1XF25rKFp2TIybB8FlpyUZdz2gprUbX9tGy6uxjLnWS9BnkSqu3EfQRfN0p9pCwGXhJPNXYI9A8kZnaxKtNhZnkLnxjrSUaV8=
+  on:
+    tags: true
+    repo: monkeython/loremipsum
