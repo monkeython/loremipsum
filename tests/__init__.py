@@ -1,7 +1,7 @@
 import unittest
 
-import test_functions
-import test_generator
+from tests import test_functions
+from tests import test_generator
 
 suite = unittest.TestSuite()
 suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(test_generator))

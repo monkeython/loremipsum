@@ -1,16 +1,21 @@
+from loremipsum import _2to3
 from loremipsum import functions
 from loremipsum import generator
 
-import sys
 import types
 import unittest
 
-
-unicode_str = sys.version_info[0] == 3 and str or unicode
+unicode_str = _2to3.unicode_str
 
 
 class TestFunctions(unittest.TestCase):
     """Functions testcase."""
+
+    def test_resources(self):
+        """Test pkg_resources resources."""
+        self.assertIsInstance(functions._LEXICON, unicode_str)
+        self.assertIsInstance(functions._SAMPLE, unicode_str)
+        self.assertEqual(len(functions._LEXICON.splitlines()), 188)
 
     def test_generate_sentence(self):
         """Test functions.generate_sentence function."""
@@ -67,7 +72,13 @@ class TestFunctions(unittest.TestCase):
         self.assertIsInstance(gen, types.GeneratorType)
         gen = list(gen)
         self.assertEqual(len(gen), 100)
-        self.assertTrue(reduce(lambda a, b: a != b, [len(g) for g in gen]))
+        lens = [len(word) for word in gen]
+        equal = True
+        previous = lens[0]
+        for len_ in lens[1:]:
+            equal = equal and (previous == len_)
+            previous = len_
+        self.assertFalse(equal)
 
         gen = functions.get_words(10, 5)
         self.assertTrue(all([len(g) == 5 for g in gen]))

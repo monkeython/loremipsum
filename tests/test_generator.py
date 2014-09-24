@@ -1,12 +1,11 @@
+from loremipsum import _2to3
 from loremipsum import functions
 from loremipsum import generator
 
-import sys
 import types
 import unittest
 
-
-unicode_str = sys.version_info[0] == 3 and str or unicode
+unicode_str = _2to3.unicode_str
 
 
 class TestGenerator(unittest.TestCase):
