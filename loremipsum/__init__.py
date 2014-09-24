@@ -55,7 +55,8 @@ __copyright__ = "2014, %s " % __author__
 __docformat__ = 'restructuredtext en'
 __keywords__ = ['lorem', 'ipsum', 'text', 'generator']
 __classifiers__ = [
-    'Development Status :: 5 - Production/Stable',
+#    'Development Status :: 5 - Production/Stable',
+    'Development Status :: 4 - Beta',
     'Intended Audience :: Developers',
     'License :: OSI Approved :: BSD License',
     'Operating System :: OS Independent',
