@@ -1,6 +1,5 @@
 language: python
 python:
-  - '2.6'
   - '2.7'
   - '3.2'
   - '3.3'
@@ -9,10 +8,11 @@ python:
   - 'pypy3'
 install: pip install -r build_requirements.txt
 script:
+  - python setup.py sdist
   - python setup.py bdist_egg
   - python setup.py test
-  - pep8 loremipsum
-  - pylint -E --rcfile .pylintrc loremipsum
+  - flake8 --max-complexity 12 loremipsum
+  - flake8 --max-complexity 12 tests
 deploy:
   provider: pypi
   user: monkeython
