@@ -18,46 +18,18 @@ Overview
 
 .. include:: ../CHANGES.rst
 
-***
-API
-***
-
 Basic usage
 ===========
 
 .. automodule:: loremipsum
 
-Exceptions
-==========
+API
+===
 
-.. autoexception:: loremipsum.SampleError
+.. toctree::
 
-.. autoexception:: loremipsum.DictionaryError
-
-Functions
-=========
-
-.. autofunction:: generate_sentence
-
-.. autofunction:: generate_sentences
-
-.. autofunction:: generate_paragraph
-
-.. autofunction:: generate_paragraphs
-
-.. autofunction:: get_sentence
-
-.. autofunction:: get_sentences
-
-.. autofunction:: get_paragraph
-
-.. autofunction:: get_paragraphs
-
-The Generator class
-===================
-
-.. autoclass:: loremipsum.Generator
-   :members: 
+   generator
+   functions
 
 Indices and tables
 ==================
