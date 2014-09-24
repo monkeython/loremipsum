@@ -11,8 +11,8 @@ script:
   - python setup.py sdist
   - python setup.py bdist_egg
   - python setup.py test
-  - flake8 --max-complexity 12 loremipsum
-  - flake8 --max-complexity 12 tests
+  - flake8 loremipsum
+  - flake8 tests
 deploy:
   provider: pypi
   user: monkeython
