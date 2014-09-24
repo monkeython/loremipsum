@@ -1,7 +1,8 @@
-from unittest import defaultTestLoader, TestSuite
-from . import test_generator
-from . import test_functions
+import unittest
 
-suite = TestSuite()
-suite.addTest(defaultTestLoader.loadTestsFromModule(test_generator))
-suite.addTest(defaultTestLoader.loadTestsFromModule(test_functions))
+import test_functions
+import test_generator
+
+suite = unittest.TestSuite()
+suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(test_generator))
+suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(test_functions))

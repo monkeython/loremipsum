@@ -1,88 +1,61 @@
-import loremipsum
-import unittest
-from types import GeneratorType
-from contextlib import contextmanager
+from loremipsum import functions
+from loremipsum import generator
+
 import sys
+import types
+import unittest
 
-if sys.version_info[0] == 3:
-    unicode = str
 
-
-@contextmanager
-def _assertRaises(self, exceptions):
-    try:
-        yield
-    except Exception as e:
-        self.assertTrue(isinstance(e, exceptions))
+unicode_str = sys.version_info[0] == 3 and str or unicode
 
 
 class TestGenerator(unittest.TestCase):
+    """Generator TestCase."""
 
     def setUp(self):
-        self.generator = loremipsum.Generator()
+        """Setup a loremipsum generator to use in tests."""
+        self.loremipsum = functions._LOREMIPSUM
 
     def test_sample(self):
-        with _assertRaises(self, loremipsum.SampleError):
-            self.generator.sample = ' . , ! ? '
-        with _assertRaises(self, loremipsum.SampleError):
-            self.generator.sample = ''
-        sample = self.generator.sample
-        self.assertTrue(isinstance(sample, unicode))
+        """Test Generator.sample property."""
+        with self.assertRaises(ValueError):
+            generator.Generator(' . , ! ?',
+                                functions._LEXICON,
+                                functions._WORD_DELIMITERS,
+                                functions._SENTENCE_DELIMITERS)
+        with self.assertRaises(ValueError):
+            generator.Generator('',
+                                functions._LEXICON,
+                                functions._WORD_DELIMITERS,
+                                functions._SENTENCE_DELIMITERS)
+        self.assertIsInstance(self.loremipsum.sample, unicode_str)
 
-    def test_dictionary(self):
-        with _assertRaises(self, loremipsum.DictionaryError):
-            self.generator.dictionary = []
-        dictionary = self.generator.dictionary
-        self.assertTrue(isinstance(dictionary, dict))
+    def test_lexicon(self):
+        """Test Generator.lexicon property."""
+        with self.assertRaises(ValueError):
+            generator.Generator(functions._SAMPLE,
+                                list(),
+                                functions._WORD_DELIMITERS,
+                                functions._SENTENCE_DELIMITERS)
+        lexicon = self.loremipsum.lexicon
+        self.assertIsInstance(lexicon, tuple)
+        for i in range(len(lexicon)):
+            self.assertIsInstance(lexicon[i], unicode_str)
 
-    def _test_sigma_mean(self, attr):
-        self.assertTrue(isinstance(getattr(self.generator, attr), float))
-        with _assertRaises(self, ValueError):
-            setattr(self.generator, attr, -1)
+    def test_incipit(self):
+        """Test Generator.incipit property."""
+        sample, incipit = self.loremipsum.sample, self.loremipsum.incipit
+        self.assertIsInstance(incipit, unicode_str)
+        self.assertTrue(sample.startswith(incipit))
 
-    def test_sentence_sigma(self):
-        self._test_sigma_mean('sentence_sigma')
+    def test_generate_word(self):
+        """Test Generator.generate_word method."""
+        self.assertIsInstance(self.loremipsum.generate_word(), unicode_str)
+        self.assertIsNone(self.loremipsum.generate_word(15))
+        self.assertTrue(len(self.loremipsum.generate_word(5)), 5)
 
-    def test_sentence_mean(self):
-        self._test_sigma_mean('sentence_mean')
-
-    def test_paragraph_sigma(self):
-        self._test_sigma_mean('paragraph_sigma')
-
-    def test_paragraph_mean(self):
-        self._test_sigma_mean('paragraph_mean')
-
-    def _test_generated(self, generated, start_with_lorem=False):
-        self.assertEqual(len(generated), 3)
-        self.assertTrue(isinstance(generated, tuple))
-        sentences, words, text = generated
-        self.assertTrue(isinstance(sentences, int))
-        self.assertTrue(isinstance(words, int))
-        self.assertTrue(isinstance(text, unicode))
-        self.assertEqual(text.startswith('Lorem ipsum'), start_with_lorem)
-
-    def _test_generators(self, method, start_with_lorem=False):
-        generator = method(3, start_with_lorem)
-        self.assertTrue(isinstance(generator, GeneratorType))
-        self._test_generated(next(generator), start_with_lorem)
-        generated = 1
-        for each in generator:
-            self._test_generated(each)
-            generated += 1
-        self.assertEqual(generated, 3)
-
-    def test_generate_sentence(self):
-        self._test_generated(self.generator.generate_sentence(True), True)
-        self._test_generated(self.generator.generate_sentence(False), False)
-
-    def test_generate_sentences(self):
-        self._test_generators(self.generator.generate_sentences, True)
-        self._test_generators(self.generator.generate_sentences, False)
-
-    def test_generate_paragraph(self):
-        self._test_generated(self.generator.generate_paragraph(True), True)
-        self._test_generated(self.generator.generate_paragraph(False), False)
-
-    def test_generate_paragraphs(self):
-        self._test_generators(self.generator.generate_paragraphs, True)
-        self._test_generators(self.generator.generate_paragraphs, False)
+    def test_generate_words(self):
+        """Test Generator.generate_words method."""
+        words = self.loremipsum.generate_words(5)
+        self.assertIsInstance(words, types.GeneratorType)
+        self.assertTrue(len(list(words)), 5)
