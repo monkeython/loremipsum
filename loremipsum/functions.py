@@ -16,7 +16,8 @@ __all__ = [
     'get_paragraph',
     'get_paragraphs']
 
-import generator
+from loremipsum import generator
+
 import pkg_resources as pkg
 
 # Delimiters that mark ends of sentences
@@ -27,13 +28,13 @@ _SENTENCE_DELIMITERS = ('.', '?', '!')
 _WORD_DELIMITERS = (',',) + _SENTENCE_DELIMITERS
 
 # Sample lorem ipsum text.
-_SAMPLE = pkg.resource_stream(__name__, 'default/sample.txt').read()
+_SAMPLE = pkg.resource_string(__name__, 'default/sample.txt').decode('utf-8')
 
 # Pseudo-latin lexicon.
-_LEXICON = pkg.resource_stream(__name__, 'default/lexicon.txt').readlines()
+_LEXICON = pkg.resource_string(__name__, 'default/lexicon.txt').decode('utf-8')
 
 _LOREMIPSUM = generator.Generator(_SAMPLE,
-                                  _LEXICON,
+                                  _LEXICON.splitlines(),
                                   _WORD_DELIMITERS,
                                   _SENTENCE_DELIMITERS)
 

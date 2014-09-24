@@ -7,7 +7,8 @@ from __future__ import unicode_literals
 import math
 import random
 import re
-import sys
+
+from loremipsum import _2to3
 
 __all__ = ['Generator']
 
@@ -15,7 +16,7 @@ ceil = math.ceil
 sqrt = math.sqrt
 choice = random.choice
 normalvariate = random.normalvariate
-unicode_str = sys.version_info[0] == 3 and str or unicode
+unicode_str = _2to3.unicode_str
 
 
 def _sentences_finditer(generator, text):
@@ -38,7 +39,7 @@ def _mean(values):
 
 def _sigma(values):
     """Calculate the sigma value of a list of integers."""
-    variance = _mean([v**2 for v in values]) - _mean(values)**2
+    variance = _mean([v ** 2 for v in values]) - _mean(values) ** 2
     return sqrt(variance)
 
 

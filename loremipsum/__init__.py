@@ -8,9 +8,9 @@ can simply return the text you desire. There are 2 sets of functions:
 On the average, you probably want to import the **get_** prefixed functions and
 just get the text:
 
->>> from loremipsum import get_sentences
+>>> import loremipsum
 >>>
->>> sentences_list = get_sentences(5)
+>>> loremipsum.sentences_list = get_sentences(5)
 >>> len(sentences_list)
 5
 >>>
@@ -18,36 +18,27 @@ just get the text:
 If you fancy some statistics, you want to import the **generate_**
 prefixed functions:
 
->>> from loremipsum import generate_paragraph
+>>> import loremipsum
 >>>
->>> sentences_count, words_count, paragraph = generate_paragraph()
+>>> sentences_count, words_count, paragraph = loremipsum.generate_paragraph()
 
 If you need generate text based on your own sample text and/or dictionary, you
 want to import the **Generator** class:
 
->>> from loremipsum import Generator
+>>> import loremipsum
 >>>
 >>> with open('data/sample.txt', 'r') as sample_txt
 >>>     sample = sample_txt.read()
->>> with open('data/dictionary.txt', 'r') as dictionary_txt
->>>     dictionary = dictionary_txt.read().split()
+>>> with open('data/lexicon.txt', 'r') as lexicon_txt
+>>>     dictionary = lexicon_txt.read().split()
 >>>
->>> g = Generator(sample, dictionary)
+>>> sentence_delimiters = ('.', '?', '!')
+>>> word_relimiters = (',',) + sentence_delimiters
+>>> g = loremipsum.Generator(sample, dictionary,
+                             word_relimiters, sentence_delimiters)
 >>> sentence = g.get_sentence()
 >>>
 """
-
-from functions import generate_paragraph
-from functions import generate_paragraphs
-from functions import generate_sentence
-from functions import generate_sentences
-from functions import get_paragraph
-from functions import get_paragraphs
-from functions import get_sentence
-from functions import get_sentences
-from functions import get_word
-from functions import get_words
-from generator import Generator
 
 __author__ = "Luca De Vitis <luca@monkeython.com>"
 __version__ = '2.0.0-b1'
@@ -69,6 +60,21 @@ __classifiers__ = [
     'Programming Language :: Python :: Implementation :: Jython',
     'Programming Language :: Python :: Implementation :: PyPy',
     'Topic :: Software Development :: Libraries :: Python Modules']
+
+from loremipsum import functions
+from loremipsum import generator
+
+generate_paragraph = functions.generate_paragraph
+generate_paragraphs = functions.generate_paragraphs
+generate_sentence = functions.generate_sentence
+generate_sentences = functions.generate_sentences
+get_paragraph = functions.get_paragraph
+get_paragraphs = functions.get_paragraphs
+get_sentence = functions.get_sentence
+get_sentences = functions.get_sentences
+get_word = functions.get_word
+get_words = functions.get_words
+Generator = generator.Generator
 
 __all__ = [
     'generate_sentence',
