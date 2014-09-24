@@ -1,9 +1,8 @@
 """
 python setup.py bdist_egg
 """
-import sys
-from setuptools import setup
 import os
+import sys
 
 WD = os.path.dirname(os.path.abspath(__file__))
 os.chdir(WD)
@@ -15,7 +14,7 @@ AUTHOR, EMAIL = PACKAGE.__author__.rsplit(' ', 1)
 
 with open('README.rst', 'r') as README:
     DESCRIPTION = README.readline().strip()
-    LONG_DESCRIPTION = ''.join((DESCRIPTION, README.read()))
+    LONG_DESCRIPTION = '\n'.join((DESCRIPTION, README.read()))
 
 URL = 'http://projects.monkeython.com/%s' % NAME
 
@@ -35,4 +34,5 @@ EGG = {
 }
 
 if __name__ == '__main__':
-    setup(**EGG)
+    import setuptools
+    setuptools.setup(**EGG)
