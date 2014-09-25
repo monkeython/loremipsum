@@ -10,7 +10,7 @@ just get the text:
 
 >>> import loremipsum
 >>>
->>> loremipsum.sentences_list = get_sentences(5)
+>>> sentences_list = loremipsum.get_sentences(5)
 >>> len(sentences_list)
 5
 >>>
@@ -27,15 +27,15 @@ want to import the **Generator** class:
 
 >>> import loremipsum
 >>>
->>> with open('data/sample.txt', 'r') as sample_txt
->>>     sample = sample_txt.read()
->>> with open('data/lexicon.txt', 'r') as lexicon_txt
->>>     dictionary = lexicon_txt.read().split()
+>>> with open('data/sample.txt', 'rb') as sample_txt
+>>>     sample = sample_txt.read().decode('utf-8')
+>>> with open('data/lexicon.txt', 'rb') as lexicon_txt
+>>>     dictionary = lexicon_txt.read().decode('utf-8').split()
 >>>
 >>> sentence_delimiters = ('.', '?', '!')
 >>> word_relimiters = (',',) + sentence_delimiters
 >>> g = loremipsum.Generator(sample, dictionary,
-                             word_relimiters, sentence_delimiters)
+...                          word_relimiters, sentence_delimiters)
 >>> sentence = g.get_sentence()
 >>>
 """
