@@ -13,9 +13,13 @@ Changes
    * New API for the **Generator.generate_** methods: now developers can
      override sentences and paragraphs mean and sigma values, as well as fixing
      their lienght.
-   * New **Generator** methods to generate siply words: generate_word and generate_words
+   * New **Generator** methods to generate siply words: generate_word and
+     generate_words
    * New **loremipsum** functions API to reflects the new **Generator** API.
-   * New **loremipsum** functions to interface with new **Generator** methods: get_word and get_words
+   * New **loremipsum** functions to interface with new **Generator** methods:
+     get_word and get_words
+   * New behaviour for get_sentences, get_paragraphs, generate_sentences,
+     generate_paragraphs functions: now return a generator.
 1.0.5
    * Added python3 support: fixes #8
    * Added README.rst to MANIFEST.in: fixes #9
