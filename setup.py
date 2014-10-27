@@ -30,7 +30,7 @@ EGG = {
     'keywords': PACKAGE.__keywords__,
     'packages': [NAME],
     'include_package_data': True,
-    'test_suite': 'tests.suite'
+    'test_suite': 'loremipsum.tests.suite'
 }
 
 if __name__ == '__main__':

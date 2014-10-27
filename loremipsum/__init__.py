@@ -64,6 +64,7 @@ __classifiers__ = [
 from loremipsum import generator
 from loremipsum import samples
 from loremipsum import serialization
+from loremipsum import tests
 
 import collections
 import functools
@@ -85,7 +86,8 @@ __all__ = [
     'get_paragraphs',
     'generator',
     'samples',
-    'serialization']
+    'serialization',
+    'tests']
 
 
 _PLUGS = collections.defaultdict(dict)
