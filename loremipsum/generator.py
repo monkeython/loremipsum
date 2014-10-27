@@ -213,7 +213,7 @@ class Sample(object):
 
     def row(self):
         return (
-            self._s['sample'],
+            self._s['text'],
             self._s['lexicon'],
             self._s['word_delimiters'],
             self._s['sentence_delimiters'])
