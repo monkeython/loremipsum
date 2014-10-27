@@ -6,12 +6,11 @@ sentences, or just random words out of a sample text and a sample lexicon.
 from __future__ import unicode_literals
 import collections
 import contextlib
-import itertools
 import math
 import random
 import re
 
-from loremipsum.serialization import mediums
+from loremipsum.serialization import schemes
 
 __all__ = ['Generator', 'Sample']
 
@@ -20,9 +19,11 @@ __all__ = ['Generator', 'Sample']
 try:
     unicode_str = __builtins__.get('unicode')
     irange = __builtins__.get('xrange')
+    urlparse = __import__('urlparse').urlparse
 except AttributeError:
     unicode_str = str
     irange = range
+    urlparse = __import__('urllib.parse', fromlist=['urllib']).urlparse
 
 
 def _mean(values):
@@ -88,7 +89,7 @@ class Sample(object):
             self._reheat(frozen)
         elif sample:
             self._s = dict(sample)
-        elif all(*ingredients):
+        elif all(ingredients):
             self._cook(*ingredients)
         else:
             raise TypeError('Missing argument')
@@ -99,7 +100,6 @@ class Sample(object):
         paragraphs_lens = list()
         sentences_lens = list()
         previous = (0, 0)
-        dictionary = itertools.groupby(self._s['lexicon'].split(), len)
 
         us = lambda s: unicode_str(s).strip('\n')
         self._s = {
@@ -118,10 +118,9 @@ class Sample(object):
 
         # Words that can be used in the generated output
         # Maps a word-length to a list of words of that length
-        self._s['dictionary'] = dict((k, list(v)) for k, v in dictionary)
-
-        if not self._s['dictionary']:
-            raise ValueError("Invalid lexicon")
+        self._s['dictionary'] = dict()
+        for word in self._s['lexicon'].split():
+            self._s['dictionary'].setdefault(len(word), list()).append(word)
 
         for paragraph in self._s['text'].split('\n\n'):
 
@@ -155,9 +154,6 @@ class Sample(object):
                             starts.append(previous)
                         previous = (previous[1], len(word))
 
-        if not self._s['chains']:
-            raise ValueError("Invalid sample text")
-
         # Calculates the mean and standard deviation of the lengths of
         # sentences (in words) in a sample text.
         self._s['sentence_mean'] = _mean(sentences_lens)
@@ -167,17 +163,28 @@ class Sample(object):
         # paragraphs (in sentences) in a sample text.
         self._s['paragraph_mean'] = _mean(paragraphs_lens)
         self._s['paragraph_sigma'] = _sigma(paragraphs_lens)
+        self._taste()
 
     def _reheat(self, frozen):
-        self._s = dict(frozen)
-        self._s['chains'] = dict((tuple(k), v) for k, v in self._s['chains'])
-        for chain, values in self._s['chains'].iteritems():
-            self._s['chains'][chain] = [tuple(v) for v in values]
-        self._s['starts'] = [tuple(s) for s in self._s['starts']]
+        _s = dict(frozen)
+        _s['chains'] = dict((tuple(k), v) for k, v in _s['chains'].items())
+        for chain, values in _s['chains'].items():
+            _s['chains'][chain] = [tuple(v) for v in values]
+        _s['starts'] = [tuple(s) for s in _s['starts']]
+        self._s.update(_s)
+        self._taste()
+
+    def _taste(self):
+        """Self check."""
+
+        if not self._s['dictionary']:
+            raise ValueError("Invalid lexicon")
+        if not self._s['chains']:
+            raise ValueError("Invalid sample text")
 
     def _find_sentences(self, text):
         """Creates an iterator over text, which yields sentences."""
-        delimiters = '\\'.join(self.sample['sentence_delimiters'])
+        delimiters = '\\'.join(self._s['sentence_delimiters'])
         sentences = re.compile(r'([^\\{d}])*[\\{d}]'.format(d=delimiters))
         return sentences.finditer(text.strip())
 
@@ -224,17 +231,15 @@ class Sample(object):
         return ts(_s.items())
 
     @classmethod
-    def load(class_, name, **args):
+    def load(class_, url, **args):
         """Loads a sample from a serialization medium."""
-        medium_name = args.get('serialization_medium')
-        medium = mediums.get(medium_name, mediums.DEFAULT)
-        return medium.load(class_, name, **args)
+        url = urlparse(url)
+        return schemes.get(url.scheme).load(class_, url, **args)
 
-    def dump(self, name, **args):
+    def dump(self, url, **args):
         """Dumps a sample into a serialization medium."""
-        medium_name = args.get('serialization_medium')
-        medium = mediums.get(medium_name, mediums.DEFAULT)
-        medium.dump(self, **args)
+        url = urlparse(url)
+        schemes.get(url.scheme).dump(self, url, **args)
 
     def __getitem__(self, key):
         return self._s[key]
@@ -383,6 +388,7 @@ class Generator(object):
             # delimiter, then we don't include it because we don't want the
             # sentence to end prematurely (we want the length to match the
             # sentence_len value).
+            word_delimiter = ''
             if chain[1] not in self.sample['sentence_delimiters']:
                 word_delimiter = chain[1]
 

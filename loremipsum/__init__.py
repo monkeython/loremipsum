@@ -67,6 +67,7 @@ from loremipsum import serialization
 
 import collections
 import functools
+import string
 
 import pkg_resources
 
@@ -97,6 +98,7 @@ def _plugs_get(name, default=None, package=None):
     :param default:     The default value to return if lookup fails.
     :returns:           The plugged in object.
     """
+    name = name.translate(string.maketrans("/-", "__"))
     return _PLUGS[package.__name__].get(name, default)
 
 
@@ -105,7 +107,7 @@ def _plugs_set_default(name, package=None):
 
     :param str name:    The plugin name.
     """
-    package.DEFAULT = _PLUGS[package.__name__].get(name)
+    package.DEFAULT = _plugs_get(name, None, package)
 
 
 def _plugs_registered(package=None):
@@ -142,12 +144,14 @@ def _plugs_init(package):
 
 # Setting up the plugs
 _plugs_init(samples)
-_plugs_init(serialization.mediums)
-_plugs_init(serialization.formats)
+_plugs_init(serialization.schemes)
+_plugs_init(serialization.content_types)
+_plugs_init(serialization.content_encodings)
 
 # Setting the plugs defaults
-serialization.mediums.set_default('file')
-serialization.formats.set_default('pickle')
+serialization.schemes.set_default('file')
+serialization.content_types.set_default('application/json')
+serialization.content_encodings.set_default('gzip')
 samples.set_default('loremipsum')
 
 
