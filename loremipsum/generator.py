@@ -88,7 +88,11 @@ class Sample(object):
         if frozen:
             self._reheat(frozen)
         elif sample:
-            self._s = dict(sample)
+            if isinstance(sample, self.__class__):
+                self._s = sample._s.copy()
+            else:
+                self._s = dict()
+                self._s.update(sample)
         elif all(ingredients):
             self._cook(*ingredients)
         else:
@@ -167,11 +171,12 @@ class Sample(object):
 
     def _reheat(self, frozen):
         _s = dict(frozen)
-        _s['chains'] = dict((tuple(k), v) for k, v in _s['chains'].items())
+        _s['chains'] = dict((tuple(k), v) for k, v in _s['chains'])
         for chain, values in _s['chains'].items():
             _s['chains'][chain] = [tuple(v) for v in values]
         _s['starts'] = [tuple(s) for s in _s['starts']]
-        self._s.update(_s)
+        _s['dictionary'] = dict(_s['dictionary'])
+        self._s = _s
         self._taste()
 
     def _taste(self):
@@ -195,21 +200,19 @@ class Sample(object):
 
     @classmethod
     def cooked(class_, text, lexicon, word_delimiters, sentence_delimiters):
-        sample = class_()
-        sample._cook(text, lexicon, word_delimiters, sentence_delimiters)
-        return sample
+        return class_(
+            text=text,
+            lexicon=lexicon,
+            word_delimiters=word_delimiters,
+            sentence_delimiters=sentence_delimiters)
 
     @classmethod
     def thawed(class_, frozen):
-        sample = class_()
-        sample._reheat(frozen)
-        return sample
+        return class_(frozen=frozen)
 
     @classmethod
-    def duplicated(class_, original):
-        sample = class_()
-        sample._s = dict(original)
-        return sample
+    def duplicated(class_, sample):
+        return class_(sample=sample)
 
     def row(self):
         return (
@@ -229,6 +232,9 @@ class Sample(object):
         _s['dictionary'] = ts((k, ts(v)) for k, v in _s['dictionary'].items())
         _s['starts'] = ts(_s['starts'])
         return ts(_s.items())
+
+    def copy(self):
+        return self._s.copy()
 
     @classmethod
     def load(class_, url, **args):
@@ -279,9 +285,7 @@ class Generator(object):
         return self._sample
 
     @sample.setter
-    def set_sample(self, value):
-        if isinstance(value, Sample):
-            self._sample = value
+    def sample(self, value):
         if isinstance(value, dict):
             self._sample = Sample.duplicated(value)
         elif isinstance(value, tuple):
@@ -289,10 +293,12 @@ class Generator(object):
                 # If value is row it won't have cooked up keys, so KeyError
                 # will be raised.
                 self._sample = Sample.thawed(value)
-            except KeyError:
+            except ValueError:
                 self._sample = Sample.cooked(*value)
+        elif isinstance(value, Sample):
+            self._sample = value
         else:
-            raise ValueError
+            raise ValueError(type(value))
 
     @contextlib.contextmanager
     def default(self, **args):
@@ -304,12 +310,12 @@ class Generator(object):
         >>> from loremipsum import generator
         >>> g = generator.Generator(...)
         >>> with g.default(sentence_sigma=0.9, sentence_mean=0.9) as short:
-        >>>  sentences = short.generate_sentences(3)
-        >>>  paragraps = short.generate_paragraphs(5, incipit=True)
+        >>>     sentences = short.generate_sentences(3)
+        >>>     paragraps = short.generate_paragraphs(5, incipit=True)
         """
-        sample = dict(self.sample)
-        sample.update(args)
-        yield Generator(sample=Sample.duplicated(sample))
+        copy = self._sample._s.copy()
+        copy.update(args)
+        yield Generator(sample=Sample.duplicated(copy))
 
     def generate_word(self, length=None):
         """Selects a random word from the lexicon.
