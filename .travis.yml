@@ -10,9 +10,9 @@ install: pip install -r build_requirements.txt
 script:
   - python setup.py sdist
   - python setup.py bdist_egg
+  - python setup.py bdist_wheel
   - python setup.py test
   - flake8 loremipsum
-  - flake8 tests
 deploy:
   provider: pypi
   user: monkeython
