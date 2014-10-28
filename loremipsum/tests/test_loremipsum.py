@@ -31,7 +31,7 @@ class TestLoremipsum(unittest.TestCase):
     def test_generate_sentences(self):
         """Test loremipsum.generate_sentences function."""
         gen = loremipsum.generate_sentences(
-            100, sentence_mean=0.1, sentence_sigma=0.1)
+            100, incipit=True, sentence_mean=0.1, sentence_sigma=0.1)
         self.assertIsInstance(gen, types.GeneratorType)
         sentences = list(gen)
         self.assertEqual(len(sentences), 100)
@@ -52,7 +52,7 @@ class TestLoremipsum(unittest.TestCase):
     def test_generate_paragraphs(self):
         """Test loremipsum.generate_paragraphs function."""
         gen = loremipsum.generate_paragraphs(
-            100, paragraph_mean=0.1, paragraph_sigma=0.1)
+            100, incipit=True, paragraph_mean=0.1, paragraph_sigma=0.1)
         self.assertIsInstance(gen, types.GeneratorType)
         paragraphs = list(gen)
         self.assertEqual(len(paragraphs), 100)
