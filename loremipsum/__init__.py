@@ -41,7 +41,7 @@ want to import the **Generator** class:
 """
 
 __author__ = "Luca De Vitis <luca@monkeython.com>"
-__version__ = '2.0.0-b1'
+__version__ = '2.0.0b2'
 __copyright__ = "2014, %s " % __author__
 __docformat__ = 'restructuredtext en'
 __keywords__ = ['lorem', 'ipsum', 'text', 'generator']
