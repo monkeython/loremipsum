@@ -1,24 +1,24 @@
 """Handle gzip encoding/decoding."""
 
 import gzip
-import StringIO
+import io
 
 LEVEL = 9
 
 
 def decode(binary):
     """Decode (gunzip) binary data."""
-    encoded = StringIO.StringIO(binary)
-    with gzip.GzipFile(mode='rb', fileobj=encoded) as compressed:
-        decoded = compressed.read()
+    encoded = io.BytesIO(binary)
+    with gzip.GzipFile(mode='rb', fileobj=encoded) as file_:
+        decoded = file_.read()
     return decoded
 
 
 def encode(binary):
     """Encode (gzip) binary data."""
-    encoded = StringIO.StringIO()
-    args = dict(mode='wb', fileobj=encoded, compressionelevel=LEVEL)
-    with gzip.GzipFile(**args) as compressed:
-        compressed.write(binary)
+    encoded = io.BytesIO()
+    gzip_file = dict(mode='wb', fileobj=encoded, compresslevel=LEVEL)
+    with gzip.GzipFile(**gzip_file) as file_:
+        file_.write(binary)
     encoded.seek(0)
     return encoded.read()
