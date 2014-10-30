@@ -1,6 +1,9 @@
-"""Test serialization protocols and mediums."""
+"""Test serialization sub-package."""
 
-# from loremipsum import testing
+from loremipsum import samples
+from loremipsum.serialization import content_encodings
+from loremipsum.serialization import content_types
+from loremipsum.tests import testcases
 
 import os
 import tempfile
@@ -10,67 +13,59 @@ PREFIX = None
 
 
 def setUpModule():
-    globals()[u'PREFIX'] = tempfile.mkdtemp()
+    globals()['PREFIX'] = tempfile.mkdtemp()
 
 
 def tearDownModule():
-    os.rmdir(globals()[u'PREFIX'])
+    os.rmdir(globals()['PREFIX'])
 
 
-# class TestSerializationMediumPkgResources(testing.TestSerializationMedium):
+class TestSchemeFile(testcases.TestSerializationScheme):
 
-#     @classmethod
-#     def setUpClass(class_):
-#         from loremipsum.serialization.mediums import pkg_resources_
-#         class_._serializer = pkg_resources_
-#         class_._args = dict(package_name=u'loremipsum')
-#         class_._generator = u'loremipsum'
-
-#     def _dump(self):
-#         with self.assertRaises(NotImplementedError):
-#             self._serializer.dump(self._generator, dict(), **self._args)
-
-
-# class TestSerializationMediumDirectory(testing.TestSerializationMedium):
-
-#     @classmethod
-#     def setUpClass(class_):
-#         from loremipsum.serialization.mediums import directory
-#         class_._serializer = directory
-#         class_._args = dict(prefix=PREFIX)
-#         class_._generator = u'loremipsum'
-
-#     @classmethod
-#     def tearDownClass(class_):
-#         directory = os.path.join(PREFIX, class_._generator)
-#         for txt_file in os.listdir(directory):
-#             os.remove(os.path.join(directory, txt_file))
-#         os.rmdir(directory)
+    @classmethod
+    def setUpClass(class_):
+        class_._sample = samples.DEFAULT
+        class_._CannotLoadRemoved = IOError
+        class_._CannotRemoveAgain = OSError
+        class_._urls = {
+            'file://{}/sample'.format(PREFIX): dict(),
+            'file://{}/sample'.format(PREFIX): dict(
+                content_type='application/json',
+                content_encoding='gzip'),
+            'file://{}/sample.json'.format(PREFIX): dict(),
+            'file://{}/sample.json.Z'.format(PREFIX): dict()}
 
 
-# class TestSerializationMediumZipFile(testing.TestSerializationMedium):
+class TestContentTypeJson(testcases.TestSerializationContentType):
 
-#     @classmethod
-#     def setUpClass(class_):
-#         from loremipsum.serialization.mediums import zipfile_
-#         class_._serializer = zipfile_
-#         class_._args = dict(prefix=PREFIX)
-#         class_._generator = u'loremipsum'
-
-#     @classmethod
-#     def tearDownClass(class_):
-#         os.remove(os.path.join(PREFIX, class_._generator + u'.zip'))
+    _type = content_types.application_json
 
 
-# class TestSerializationMediumFile(testing.TestSerializationMedium):
+class TestContentTypeOctetStream(testcases.TestSerializationContentType):
 
-#     @classmethod
-#     def setUpClass(class_):
-#         from loremipsum.serialization.mediums import file_
-#         class_._serializer = file_
-#         class_._args = dict(prefix=PREFIX, extension=u'test')
-#         class_._generator = u'loremipsum'
+    _type = content_types.application_octet_stream
 
-#     @classmethod
-#     def tearDownClass(class_):
-#         os.remove(os.path.join(PREFIX, class_._generator + u'.test'))
+
+class TestContentTypeXTar(testcases.TestSerializationContentType):
+
+    _type = content_types.application_x_tar
+
+
+class TestContentTypeZip(testcases.TestSerializationContentType):
+
+    _type = content_types.application_zip
+
+
+class TestContentEncodingCompress(testcases.TestSerializationContentEncoding):
+
+    _encoding = content_encodings.compress
+
+
+class TestContentEncodingGzip(testcases.TestSerializationContentEncoding):
+
+    _encoding = content_encodings.gzip_
+
+
+class TestContentEncodingBzip2(testcases.TestSerializationContentEncoding):
+
+    _encoding = content_encodings.bzip2
