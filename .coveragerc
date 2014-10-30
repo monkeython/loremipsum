@@ -1,0 +1,8 @@
+[run]
+omit = env?/*
+
+[html]
+directory = build/docs/html/coverage
+
+[report]
+show_missing = True
