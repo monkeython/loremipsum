@@ -9,21 +9,16 @@ import contextlib
 import math
 import random
 import re
+import sys
 
 from loremipsum.serialization import schemes
 
 __all__ = ['Generator', 'Sample']
 
-# Python 3 compatibility: __builtins__ turned to a module so access to get
-# method whould raise AttributeError
-try:
-    unicode_str = __builtins__.get('unicode')
-    irange = __builtins__.get('xrange')
-    urlparse = __import__('urlparse').urlparse
-except AttributeError:
-    unicode_str = str
-    irange = range
-    urlparse = __import__('urllib.parse', fromlist=['urllib']).urlparse
+builtins = sys.modules.get('__builtin__', sys.modules.get('builtins'))
+_irange = getattr(builtins, 'xrange', range)
+_urlparse = 'urlparse' if sys.version_info[0] == 2 else 'urllib.parse'
+_urlparse = __import__(_urlparse, fromlist=_urlparse.split('.')[:1]).urlparse
 
 
 def _mean(values):
@@ -105,7 +100,7 @@ class Sample(object):
         sentences_lens = list()
         previous = (0, 0)
 
-        us = lambda s: unicode_str(s).strip('\n')
+        us = lambda s: getattr(builtins, 'unicode', str)(s).strip('\n')
         self._s = {
             'text': us(text),
             'lexicon': us(lexicon),
@@ -238,14 +233,20 @@ class Sample(object):
 
     @classmethod
     def load(class_, url, **args):
-        """Loads a sample from a serialization medium."""
-        url = urlparse(url)
+        """Loads a sample from an URL."""
+        url = _urlparse(url)
         return schemes.get(url.scheme).load(class_, url, **args)
 
     def dump(self, url, **args):
-        """Dumps a sample into a serialization medium."""
-        url = urlparse(url)
+        """Dumps a sample to an URL."""
+        url = _urlparse(url)
         schemes.get(url.scheme).dump(self, url, **args)
+
+    @staticmethod
+    def remove(url, **args):
+        """Remove a dumped sample from a URL."""
+        url = _urlparse(url)
+        schemes.get(url.scheme).remove(url, **args)
 
     def __getitem__(self, key):
         return self._s[key]
@@ -339,7 +340,7 @@ class Generator(object):
         :rtype:             generator
         """
 
-        for __ in irange(amount):
+        for __ in _irange(amount):
             yield self.generate_word(length)
 
     def generate_sentence(self, **args):
@@ -379,7 +380,7 @@ class Generator(object):
                 word_delimiter = words[-1][-1]
 
         # Generate a sentence from the "chains"
-        for __ in irange(sentence_len - len(words)):
+        for __ in _irange(sentence_len - len(words)):
             # If the current starting point is invalid, choose another randomly
             if previous not in self._sample['chains']:
                 previous = random.sample(previous_set, 1)[0]
@@ -430,7 +431,7 @@ class Generator(object):
         """
         yield self.generate_sentence(**args)
         args['incipit'] = False
-        for __ in irange(amount - 1):
+        for __ in _irange(amount - 1):
             yield self.generate_sentence(**args)
 
     def generate_paragraph(self, **args):
@@ -477,5 +478,5 @@ class Generator(object):
         """
         yield self.generate_paragraph(**args)
         args['incipit'] = False
-        for __ in irange(amount - 1):
+        for __ in _irange(amount - 1):
             yield self.generate_paragraph(**args)
