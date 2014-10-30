@@ -1,13 +1,11 @@
 from loremipsum import generator
 from loremipsum import samples
 
+import sys
 import unittest
 
 
-try:
-    unicode_str = __builtins__.get('unicode')
-except AttributeError:
-    unicode_str = str
+builtins = sys.modules.get('__builtin__', sys.modules.get('builtins'))
 
 
 class TestSample(unittest.TestCase):
@@ -17,6 +15,7 @@ class TestSample(unittest.TestCase):
     def setUpClass(class_):
         """Setup a loremipsum generator to use in tests."""
         class_._s = samples.DEFAULT
+        class_._unicode_str = getattr(builtins, 'unicode', str)
 
     def test_text(self):
         """Test Sample['text'] item."""
@@ -32,7 +31,7 @@ class TestSample(unittest.TestCase):
                 lexicon=self._s['lexicon'],
                 word_delimiters=self._s['word_delimiters'],
                 sentence_delimiters=self._s['sentence_delimiters'])
-        self.assertIsInstance(self._s['text'], unicode_str)
+        self.assertIsInstance(self._s['text'], self._unicode_str)
 
     def test_lexicon(self):
         """Test Sample['lexicon'] item."""
@@ -48,19 +47,21 @@ class TestSample(unittest.TestCase):
                 lexicon='\t',
                 word_delimiters=self._s['word_delimiters'],
                 sentence_delimiters=self._s['sentence_delimiters'])
-        self.assertIsInstance(self._s['lexicon'], unicode_str)
+        self.assertIsInstance(self._s['lexicon'], self._unicode_str)
 
     def test_word_delimiters(self):
         """Test Sample['word_delimiters'] item."""
-        self.assertIsInstance(self._s['word_delimiters'], unicode_str)
+        self.assertIsInstance(self._s['word_delimiters'],
+                              self._unicode_str)
 
     def test_sentence_delimiters(self):
         """Test Sample['sentence_delimiters'] item."""
-        self.assertIsInstance(self._s['sentence_delimiters'], unicode_str)
+        self.assertIsInstance(self._s['sentence_delimiters'],
+                              self._unicode_str)
 
     def test_incipit(self):
         """Test Sample['incipit'] item."""
-        self.assertIsInstance(self._s['incipit'], unicode_str)
+        self.assertIsInstance(self._s['incipit'], self._unicode_str)
         self.assertTrue(self._s['text'].startswith(self._s['incipit']))
 
     def test_cooked(self):
