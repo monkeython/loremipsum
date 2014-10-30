@@ -3,7 +3,6 @@
 import mimetypes
 import pickle
 
-
 mimetypes.add_type('application/octet-stream', '.pickle')
 
 
