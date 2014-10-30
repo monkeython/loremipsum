@@ -100,7 +100,8 @@ def _plugs_get(name, default=None, package=None):
     :param default:     The default value to return if lookup fails.
     :returns:           The plugged in object.
     """
-    name = name.translate(string.maketrans("/-", "__"))
+    maketrans = getattr(string, 'maketrans', getattr(str, 'maketrans', None))
+    name = name.translate(maketrans("/-", "__"))
     return _PLUGS[package.__name__].get(name, default)
 
 
@@ -140,9 +141,8 @@ def _plugs_init(package):
         name, value = module_name.rstrip('_'), getattr(package, module_name)
         _PLUGS[package.__name__][name] = value
 
-    for entry in pkg_resources.iter_entry_points(package.__name__):
-        name, value = entry()
-        _PLUGS[package.__name__][name] = value
+    plugins = pkg_resources.iter_entry_points(package.__name__)
+    _PLUGS[package.__name__].update(p for p in plugins)
 
 # Setting up the plugs
 _plugs_init(samples)
