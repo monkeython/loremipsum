@@ -1,13 +1,10 @@
 import loremipsum
 
+import sys
 import types
 import unittest
 
-
-try:
-    unicode_str = __builtins__.get('unicode')
-except AttributeError:
-    unicode_str = str
+builtins = sys.modules.get('__builtin__', sys.modules.get('builtins'))
 
 
 class TestLoremipsum(unittest.TestCase):
@@ -17,6 +14,7 @@ class TestLoremipsum(unittest.TestCase):
     def setUpClass(class_):
         """Setup default sample."""
         class_._s = loremipsum.samples.DEFAULT
+        class_._unicode_str = getattr(builtins, 'unicode', str)
 
     def test_generate_sentence(self):
         """Test loremipsum.generate_sentence function."""
@@ -83,7 +81,7 @@ class TestLoremipsum(unittest.TestCase):
 
     def test_get_sentence(self):
         """Test loremipsum.get_sentence function."""
-        self.assertIsInstance(loremipsum.get_sentence(), unicode_str)
+        self.assertIsInstance(loremipsum.get_sentence(), self._unicode_str)
 
     def test_get_sentences(self):
         """Test loremipsum.get_sentences function."""
@@ -93,7 +91,7 @@ class TestLoremipsum(unittest.TestCase):
 
     def test_get_paragraph(self):
         """Test loremipsum.get_paragraph function."""
-        self.assertIsInstance(loremipsum.get_paragraph(), unicode_str)
+        self.assertIsInstance(loremipsum.get_paragraph(), self._unicode_str)
 
     def test_get_paragraphs(self):
         """Test loremipsum.get_paragraphs function."""
