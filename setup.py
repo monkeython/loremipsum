@@ -5,14 +5,13 @@ import os
 import sys
 
 WD = os.path.dirname(os.path.abspath(__file__))
-os.chdir(WD)
 sys.path.insert(1, WD)
 
 NAME = 'loremipsum'
 PACKAGE = __import__(NAME)
 AUTHOR, EMAIL = PACKAGE.__author__.rsplit(' ', 1)
 
-with open('README.rst', 'r') as README:
+with open(os.path.join(WD, 'README.rst'), 'r') as README:
     DESCRIPTION = README.readline().strip()
     LONG_DESCRIPTION = '\n'.join((DESCRIPTION, README.read()))
 
