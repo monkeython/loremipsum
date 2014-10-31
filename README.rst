@@ -3,7 +3,7 @@
     :alt: Build status
 
 .. image:: https://coveralls.io/repos/monkeython/loremipsum/badge.png?branch=master
-    :target: https://coveralls.io/r/monkeython/loremipsum
+    :target: https://coveralls.io/r/monkeython/loremipsum?branch=master
     :alt: Test coverage
 
 .. image:: https://readthedocs.org/projects/loremipsum/badge/?version=latest
