@@ -9,7 +9,6 @@ python:
 install: pip install -r build_requirements.txt
 script:
   - python setup.py sdist
-  - python setup.py bdist_egg
   - python setup.py bdist_wheel
   - flake8 loremipsum
   - coverage run setup.py test
