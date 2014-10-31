@@ -6,7 +6,7 @@
     :target: https://coveralls.io/r/monkeython/loremipsum?branch=master
     :alt: Test coverage
 
-.. image:: https://readthedocs.org/projects/loremipsum/badge/?version=latest
+.. image:: https://readthedocs.org/projects/loremipsum/badge/?version=latest&style=default
     :target: http://loremipsum.readthedocs.org/en/latest/
     :alt: Documentation status
 
