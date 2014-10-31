@@ -1,6 +1,17 @@
 """
-This is merely a namespace package for serialization mediums and protocols
-plugins used by :py:meth:`Generator.load` and :py:meth`Generator.dump`.
+This subpackage provides the components needed to serialize a
+:py:class:`loremipsum.generator.Sample`.
+
+There are 3 components:
+
+:schemes:
+    Handle the sample URL: fetch, store, remove.
+:content_types:
+    Handle the ``Sample`` serialization formats or protocol.
+:content_encodings:
+    Handle the serialized ``Sample`` compression/decompression.
+
+All components are pluggable packages.
 """
 
 from loremipsum.serialization import content_encodings
