@@ -1,6 +1,10 @@
 """
-This module provides a simple class to generate plausible text paragraphs,
-sentences, or just random words out of a sample text and a sample lexicon.
+This module exposes the 2 classes used to generate random plausible text:
+
+* The :py:class:`loremipsum.generating.Sample` which provides the API to
+  extract, load, and dump all the needed informations from a sample.
+* The :py:class:`loremipsum.generator.Generator` which provides the API to
+  actually generate the text, using a sample.
 """
 
 from __future__ import unicode_literals
@@ -95,6 +99,7 @@ class Sample(object):
         self._hash = hash(self.frozen())
 
     def _cook(self, text, lexicon, word_delimiters, sentence_delimiters):
+        """Builds the internal state using the provided arguments."""
 
         paragraphs_lens = list()
         sentences_lens = list()
@@ -165,6 +170,7 @@ class Sample(object):
         self._taste()
 
     def _reheat(self, frozen):
+        """Builds the internal state using a frozen sample."""
         _s = dict(frozen)
         _s['chains'] = dict((tuple(k), v) for k, v in _s['chains'])
         for chain, values in _s['chains'].items():
@@ -193,22 +199,6 @@ class Sample(object):
         words = re.compile(r'\s*([\S]+)')
         return words.finditer(text.strip())
 
-    @classmethod
-    def cooked(class_, text, lexicon, word_delimiters, sentence_delimiters):
-        return class_(
-            text=text,
-            lexicon=lexicon,
-            word_delimiters=word_delimiters,
-            sentence_delimiters=sentence_delimiters)
-
-    @classmethod
-    def thawed(class_, frozen):
-        return class_(frozen=frozen)
-
-    @classmethod
-    def duplicated(class_, sample):
-        return class_(sample=sample)
-
     def row(self):
         return (
             self._s['text'],
@@ -230,6 +220,69 @@ class Sample(object):
 
     def copy(self):
         return self._s.copy()
+
+    @classmethod
+    def cooked(class_, text, lexicon, word_delimiters, sentence_delimiters):
+        """Returns a :py:class:`Sample` instance based on the provided arguments.
+
+        See :py:meth:`Sample.row` for more informations.
+
+        >>> with open('sample.txt', 'r') as txt:
+        ...     text = txt.read().decode('UTF-8')
+        ...
+        >>> with open('lexicon.txt', 'r') as txt:
+        ...     lexicon = txt.read().decode('UTF-8')
+        ...
+        >>> with open('word_delimiters.txt', 'r') as txt:
+        ...     w_delimiters = txt.read().decode('UTF-8')
+        ...
+        >>> with open('sentence_delimiters.txt', 'r') as txt:
+        ...     s_delimiters = txt.read().decode('UTF-8')
+        ...
+        >>> sample = Sample.cooked(text, lexicon, w_delimiters, s_delimiters)
+
+        Also, you can do:
+
+        >>> type(other)
+        <class 'loremipsum.generator.Sample'>
+        >>> sample = Sample.cooked(*other.row())
+        >>>
+        """
+        return class_(
+            text=text,
+            lexicon=lexicon,
+            word_delimiters=word_delimiters,
+            sentence_delimiters=sentence_delimiters)
+
+    @classmethod
+    def thawed(class_, frozen):
+        """Returns a :py:class:`Sample` instance based on the frozen sample.
+
+        :param frozen:  A frozen representation of a sample: a tuple of tuples.
+
+        See :py:meth:`Sample.frozen` for more informations.
+
+        >>> type(other)
+        <class 'loremipsum.generator.Sample'>
+        >>> sample = Sample.thawed(other.frozen())
+        >>>
+        """
+        return class_(frozen=frozen)
+
+    @classmethod
+    def duplicated(class_, sample):
+        """Returns a :py:class:`Sample` instance based on a mapping.
+
+        :param sample:  Can be a :py:class:`dict` or a :py:class:`Sample`.
+
+        See :py:meth:`Sample.frozen` for more informations.
+
+        >>> type(other)
+        <class 'loremipsum.generator.Sample'>
+        >>> sample = Sample.thawed(other.frozen())
+        >>>
+        """
+        return class_(sample=sample)
 
     @classmethod
     def load(class_, url, **args):
@@ -273,9 +326,9 @@ class Generator(object):
     provided list of words is then used to generate the random text, so that it
     will have a similar distribution of paragraph, sentence and word lengths.
 
-    That attributes of this class should be considered 'read-only', and even if
+    The attributes of this class should be considered 'read-only'. Even if
     you can access the internal state of the generator, you don't want to mess
-    with it.
+    with it: we are all grown adults.
     """
 
     def __init__(self, sample=None):

@@ -1,7 +1,10 @@
-
 .. image:: https://travis-ci.org/monkeython/loremipsum.svg?branch=master
     :target: https://travis-ci.org/monkeython/loremipsum
     :alt: Build status
+
+.. image:: https://coveralls.io/repos/monkeython/loremipsum/badge.png?branch=master
+    :target: https://coveralls.io/r/monkeython/loremipsum
+    :alt: Test coverage
 
 .. image:: https://readthedocs.org/projects/loremipsum/badge/?version=latest
     :target: http://loremipsum.readthedocs.org/en/latest/
@@ -40,11 +43,15 @@
 ..     :alt: Supported Python implementations
 
 The purpose of this package is to generate random (plausible) text sentences
-and paargraphs based on a dictionary and a sample text. By default this package
-will generate `Lorem Ipsum`_ style text, but you can customize the generator to
-effectively load any dictionary and any sample text you like.
+and pargraphs based on a lexicon, a sample text, and a list of characted used
+as word or sentence delimiters. By default this package will generate `Lorem
+Ipsum`_ style text, but you can customize the generator to effectively load any
+sample text you like.
 
-This package has en extensive docstring documentation, so you can read more on
-the online documentation or in the python interactive shell as well.
+You can read more on `Pythonhosted`_ or `Read the Docs`_. Since this package
+has en extensive docstring documentation as well as code comments, you can
+read more browsing the source code or in the python interactive shell.
 
+.. _`Pythonhosted`: http://pythonhosted.org/loremipsum
+.. _`Read the Docs`: http://loremipsum.readthedocs.org
 .. _`Lorem Ipsum`: http://en.wikipedia.org/wiki/Lorem_ipsum
