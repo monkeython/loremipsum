@@ -23,13 +23,12 @@ Basic usage
 
 .. automodule:: loremipsum
 
-API
-===
+Advance usage
+=============
 
 .. toctree::
 
    generator
-   functions
 
 Indices and tables
 ==================

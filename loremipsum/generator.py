@@ -41,10 +41,13 @@ class Sample(object):
     Sentences are generated so that they will have a similar distribution
     of word, sentence and paragraph lengths and punctuation.
 
-    Sample text should be a string consisting of a number of paragraphs,
-    each separated by empty lines. Each paragraph should consist of a
-    number of sentences, separated by periods, exclamation marks and/or
-    question marks. Sentences consist of words, separated by white space.
+    Sample text should be a string consisting of a number of paragraphs, each
+    separated by empty lines. Each paragraph should consist of a number of
+    sentences, separated by any character listed as sentence delimiters.
+    Sentences consist of words separated by white spaces. Words may be followed
+    by any character listed as word delimiters.
+
+    ``Sample`` instances behave like read-only dictionay and can be hashed.
 
     :param tuple frozen:                An immutable representation of the
                                         sample imformations. This argument
@@ -200,6 +203,11 @@ class Sample(object):
         return words.finditer(text.strip())
 
     def row(self):
+        """Returns the row components of a sample.
+
+        :returns:   text, lexicon, word_delimiters, sentence_delimiters
+        :rtype:     tuple
+        """
         return (
             self._s['text'],
             self._s['lexicon'],
@@ -219,11 +227,15 @@ class Sample(object):
         return ts(_s.items())
 
     def copy(self):
+        """Returns a :py:class:`dict`  representation of itself.
+
+        :rtype:     dict
+        """
         return self._s.copy()
 
     @classmethod
     def cooked(class_, text, lexicon, word_delimiters, sentence_delimiters):
-        """Returns a :py:class:`Sample` instance based on the provided arguments.
+        """Returns a :py:class:`Sample` instance based on arguments.
 
         See :py:meth:`Sample.row` for more informations.
 
@@ -279,7 +291,7 @@ class Sample(object):
 
         >>> type(other)
         <class 'loremipsum.generator.Sample'>
-        >>> sample = Sample.thawed(other.frozen())
+        >>> sample = Sample.duplicated(other.copy())
         >>>
         """
         return class_(sample=sample)
