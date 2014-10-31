@@ -15,7 +15,7 @@ with open(os.path.join(WD, 'README.rst'), 'r') as README:
     DESCRIPTION = README.readline().strip()
     LONG_DESCRIPTION = '\n'.join((DESCRIPTION, README.read()))
 
-URL = 'http://projects.monkeython.com/%s' % NAME
+URL = 'https://github.com/monkeython/%s' % NAME
 
 EGG = {
     'name': NAME,
