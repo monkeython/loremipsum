@@ -18,17 +18,15 @@ Overview
 
 .. include:: ../CHANGES.rst
 
-Basic usage
-===========
-
-.. automodule:: loremipsum
-
-Advance usage
-=============
+Usage
+=====
 
 .. toctree::
 
-   generator
+   basic
+   advanced
+   plugins
+   serialization/index
 
 Indices and tables
 ==================

@@ -11,10 +11,10 @@ import pkg_resources
 
 _resource = lambda n: pkg_resources.resource_string(__name__, n).decode('UTF-8')
 
-_text = resource('loremipsum/sample.txt')
-_lexicon = resource('loremipsum/lexicon.txt')
-_word_delimiters = resource('loremipsum/word_delimiters.txt')
-_sentence_delimiters = resource('loremipsum/sentence_delimiters.txt')
+_text = _resource('loremipsum/sample.txt')
+_lexicon = _resource('loremipsum/lexicon.txt')
+_word_delimiters = _resource('loremipsum/word_delimiters.txt')
+_sentence_delimiters = _resource('loremipsum/sentence_delimiters.txt')
 
 loremipsum = generator.Sample(text=_text,
                               lexicon=_lexicon,
