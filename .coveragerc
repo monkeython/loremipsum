@@ -1,5 +1,7 @@
 [run]
-omit = env?/*
+omit =
+    env?/*
+    /home/travis/virtualenv/*
 
 [html]
 directory = build/docs/html/coverage
