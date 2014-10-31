@@ -11,8 +11,10 @@ script:
   - python setup.py sdist
   - python setup.py bdist_egg
   - python setup.py bdist_wheel
-  - python setup.py test
   - flake8 loremipsum
+  - coverage run setup.py test
+after_success:
+  - coveralls
 deploy:
   provider: pypi
   user: monkeython
