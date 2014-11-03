@@ -427,7 +427,7 @@ class Generator(object):
         mean = args.get('sentence_mean', self._sample['sentence_mean'])
         sigma = args.get('sentence_sigma', self._sample['sentence_sigma'])
         incipit = args.get('incipit', False)
-        random_len = int(1 + math.ceil(abs(random.normalvariate(mean, sigma))))
+        random_len = max(2, int(round(abs(random.normalvariate(mean, sigma)))))
         sentence_len = args.get('sentence_len', random_len)
         previous_set = set(self._sample['chains']) & set(self._sample['starts'])
         words = list()
@@ -518,7 +518,7 @@ class Generator(object):
         # variable.
         mean = args.get('paragraph_mean', self._sample['paragraph_mean'])
         sigma = args.get('paragraph_sigma', self._sample['paragraph_sigma'])
-        random_len = int(1 + math.ceil(abs(random.normalvariate(mean, sigma))))
+        random_len = max(2, int(round(abs(random.normalvariate(mean, sigma)))))
         paragraph_len = args.get('paragraph_len', random_len)
 
         words_count = 0
