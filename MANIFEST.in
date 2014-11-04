@@ -1,2 +1,2 @@
-recursive-include loremipsum/default *.txt
-include README.rst
+recursive-include loremipsum/samples/loremipsum/ *.txt
+include *.rst

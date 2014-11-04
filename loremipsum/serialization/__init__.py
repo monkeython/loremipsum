@@ -11,7 +11,7 @@ There are 3 components:
 :content_encodings:
     Handle the serialized ``Sample`` compression/decompression.
 
-All components are pluggable packages.
+All components are pluggable packages: see also :py:mod:`loremipsum.plugs`.
 """
 
 from loremipsum.serialization import content_encodings
