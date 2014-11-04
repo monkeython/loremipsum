@@ -1,10 +1,11 @@
 """
 This module exposes the 2 classes used to generate random plausible text:
 
-* The :py:class:`loremipsum.generating.Sample` which provides the API to
-  extract, load, and dump all the needed informations from a sample.
-* The :py:class:`loremipsum.generator.Generator` which provides the API to
-  actually generate the text, using a sample.
+:``Sample``:
+    Provides the API to extract, load, and dump all the needed informations
+    from a sample.
+:``Generator``:
+    Provides the API to actually generate the text, using a sample.
 """
 
 from __future__ import unicode_literals
@@ -20,9 +21,9 @@ from loremipsum.serialization import schemes
 __all__ = ['Generator', 'Sample']
 
 builtins = sys.modules.get('__builtin__', sys.modules.get('builtins'))
-_irange = getattr(builtins, 'xrange', range)
 _urlparse = 'urlparse' if sys.version_info[0] == 2 else 'urllib.parse'
 _urlparse = __import__(_urlparse, fromlist=_urlparse.split('.')[:1]).urlparse
+_irange = getattr(builtins, 'xrange', range)
 
 
 def _mean(values):
@@ -38,37 +39,33 @@ def _sigma(values):
 class Sample(object):
     """The sample that generated sentences are based on.
 
-    Sentences are generated so that they will have a similar distribution
-    of word, sentence and paragraph lengths and punctuation.
-
-    Sample text should be a string consisting of a number of paragraphs, each
-    separated by empty lines. Each paragraph should consist of a number of
-    sentences, separated by any character listed as sentence delimiters.
-    Sentences consist of words separated by white spaces. Words may be followed
-    by any character listed as word delimiters.
-
-    ``Sample`` instances behave like read-only dictionay and can be hashed.
-
     :param tuple frozen:                An immutable representation of the
                                         sample imformations. This argument
-                                        takes precedence over sample, text,
-                                        lexicon, word_delimiters or
-                                        sentence_delimiters.
-    :param dict sample:                 A dictionary of the sample informations.
-                                        This argument takes precedence over
-                                        sample, lexicon, word_delimiters or
-                                        sentence_delimiters.
+                                        takes precedence over any other:
+                                        ``sample``, ``text``, ``lexicon``,
+                                        ``word_delimiters`` and
+                                        ``sentence_delimiters`` will be
+                                        ignored.
+    :param dict sample:                 A dictionary of the sample internal
+                                        state. If ``sample`` is suplpyed,
+                                        ``text``, ``lexicon``,
+                                        ``word_delimiters`` and
+                                        ``sentence_delimiters``
+                                        will be ignored.
     :param str text:                    A string containing the sample text.
                                         Sample text must contain one or more
                                         empty-line delimited paragraphs. Each
                                         paragraph must contain one or more
-                                        sentences, delimited by any char
-                                        included in the sentence_delimiters
-                                        param.
+                                        sentences, delimited by any character
+                                        included in the ``sentence_delimiters``
+                                        argument. Sentences must contains words
+                                        included in ``lexicon`` and any
+                                        character included in
+                                        ``word_delimiters`` argument.
     :param str lexicon:                 A list of strings to be used as words.
-    :param str word_delimiters:         A string of chars used as word
+    :param str word_delimiters:         A string of characters used as word
                                         delimiters.
-    :param str sentence_delimiters:     A string of chars used as sentence
+    :param str sentence_delimiters:     A string of characters used as sentence
                                         delimiters.
     :raises TypeError:                  If neither frozen nor sample are
                                         provided and any of text, lexicon,
@@ -77,6 +74,18 @@ class Sample(object):
     :raises ValueError:                 If could not succesfully create an
                                         internal :py:class:`Sample` out of the
                                         supplied arguments.
+
+    Text will be generated so that it will have a similar distribution
+    of word, sentence and paragraph lengths and punctuation as the sample.
+
+    Sample's ``text`` will be analysed to generate Markov chains that in turn
+    will be used to generate the random text. In the analysis, only paragraph,
+    sentence and word lengths, and some basic punctuation matter -- the actual
+    words are ignored. A provided list of words, the ``lexicon``, will be used
+    to generate the random text, so that it will have a similar distribution of
+    paragraph, sentence and word lengths.
+
+    ``Sample`` instances behave like read-only dictionay and can be hashed.
     """
 
     def __init__(self, **args):
@@ -174,6 +183,7 @@ class Sample(object):
 
     def _reheat(self, frozen):
         """Builds the internal state using a frozen sample."""
+
         _s = dict(frozen)
         _s['chains'] = dict((tuple(k), v) for k, v in _s['chains'])
         for chain, values in _s['chains'].items():
@@ -193,12 +203,14 @@ class Sample(object):
 
     def _find_sentences(self, text):
         """Creates an iterator over text, which yields sentences."""
+
         delimiters = '\\'.join(self._s['sentence_delimiters'])
         sentences = re.compile(r'([^\\{d}])*[\\{d}]'.format(d=delimiters))
         return sentences.finditer(text.strip())
 
     def _find_words(self, text):
         """Creates an iterator over text, which yields words."""
+
         words = re.compile(r'\s*([\S]+)')
         return words.finditer(text.strip())
 
@@ -207,6 +219,9 @@ class Sample(object):
 
         :returns:   text, lexicon, word_delimiters, sentence_delimiters
         :rtype:     tuple
+
+        The row components are those strictly necessary to build the internal
+        state of a :py:class:`Sample`.
         """
         return (
             self._s['text'],
@@ -218,6 +233,9 @@ class Sample(object):
         """Returns a frozen representation of itself.
 
         :rtype:     tuple of tuples
+
+        Basically this method turns the internal dictionary of the sample state
+        into tuples of tuples, allowing an easier serialization.
         """
         _s = self._s.copy()
         ts = lambda i: tuple(sorted(i))
@@ -227,7 +245,7 @@ class Sample(object):
         return ts(_s.items())
 
     def copy(self):
-        """Returns a :py:class:`dict`  representation of itself.
+        """Returns a :py:class:`dict`  representation (shallow copy) of itself.
 
         :rtype:     dict
         """
@@ -237,24 +255,27 @@ class Sample(object):
     def cooked(class_, text, lexicon, word_delimiters, sentence_delimiters):
         """Returns a :py:class:`Sample` instance based on arguments.
 
+        :param text:                See :py:class:`Sample` keyword arguments.
+        :param lexicon:             See :py:class:`Sample` keyword arguments.
+        :param word_delimiters:     See :py:class:`Sample` keyword arguments.
+        :param sentence_delimiters: See :py:class:`Sample` keyword arguments.
+
         See :py:meth:`Sample.row` for more informations.
 
-        >>> with open('sample.txt', 'r') as txt:
-        ...     text = txt.read().decode('UTF-8')
+        >>> def resource(name):
+        ...     with open(name, 'rb') as txt
+        ...         content = txt.read().decode('UTF-8')
+        ...     return content
         ...
-        >>> with open('lexicon.txt', 'r') as txt:
-        ...     lexicon = txt.read().decode('UTF-8')
-        ...
-        >>> with open('word_delimiters.txt', 'r') as txt:
-        ...     w_delimiters = txt.read().decode('UTF-8')
-        ...
-        >>> with open('sentence_delimiters.txt', 'r') as txt:
-        ...     s_delimiters = txt.read().decode('UTF-8')
-        ...
+        >>> text = resource('sample.txt')
+        >>> lexicon = resource('lexicon.txt')
+        >>> w_delimiters = resource('word_delimiters.txt')
+        >>> s_delimiters = resource('sentence_delimiters.txt')
         >>> sample = Sample.cooked(text, lexicon, w_delimiters, s_delimiters)
 
         Also, you can do:
 
+        >>> other = loremipsum.samples.get(name)
         >>> type(other)
         <class 'loremipsum.generator.Sample'>
         >>> sample = Sample.cooked(*other.row())
@@ -274,6 +295,7 @@ class Sample(object):
 
         See :py:meth:`Sample.frozen` for more informations.
 
+        >>> other = loremipsum.samples.get(name)
         >>> type(other)
         <class 'loremipsum.generator.Sample'>
         >>> sample = Sample.thawed(other.frozen())
@@ -289,6 +311,7 @@ class Sample(object):
 
         See :py:meth:`Sample.frozen` for more informations.
 
+        >>> other = loremipsum.samples.get(name)
         >>> type(other)
         <class 'loremipsum.generator.Sample'>
         >>> sample = Sample.duplicated(other.copy())
@@ -298,18 +321,59 @@ class Sample(object):
 
     @classmethod
     def load(class_, url, **args):
-        """Loads a sample from an URL."""
+        """Loads a sample from an URL.
+
+        :param str url:             The URL of the sample.
+        :returns:                   A ``class_`` instance.
+        :raises AttributeError:     If could not find specified ``scheme``,
+                                    ``content_type`` or ``content_encoding``
+
+        Base keyword arguments:
+
+        :content_type:
+            Force the content to be handled as specified. The value of
+            this keyword must be a string containig the internet media type
+            that you want to be used: ``<type>/<sub-type>``. If this keyword
+            argument is not specified, it will be guessed using the URL.
+        :content_encoding:
+            Force the content encoding to be handled as specified. By content
+            encoding, basically, we mean compression method. If this keyword
+            argument is not specified, it will be guessed using the URL.
+
+        Other keyword arguments are passed to the handlers. See their
+        respective documentation.
+
+        By default, ``content_type`` and ``content_encoding`` guessing should
+        be done by :py:func:`mimetypes.guess_type`.  Refer to each scheme
+        documentation for more information.
+        """
         url = _urlparse(url)
         return schemes.get(url.scheme).load(class_, url, **args)
 
     def dump(self, url, **args):
-        """Dumps a sample to an URL."""
+        """Dumps a sample to an URL.
+
+        :param str url:             The URL of the sample.
+        :raises AttributeError:     If could not find specified ``scheme``,
+                                    ``content_type`` or ``content_encoding``
+
+        Read :py:meth:`load` for more information about keyword arguments and
+        ``content_type`` or ``content_encoding`` guessing.
+        """
         url = _urlparse(url)
         schemes.get(url.scheme).dump(self, url, **args)
 
     @staticmethod
     def remove(url, **args):
-        """Remove a dumped sample from a URL."""
+        """Remove a dumped sample from a URL.
+
+        :param str url:             The URL of the sample.
+        :raises AttributeError:     If could not find specified ``scheme``,
+                                    ``content_type`` or ``content_encoding``
+
+        Read :py:meth:`load` for more information about keyword arguments and
+        ``content_type`` or ``content_encoding`` guessing.
+        """
         url = _urlparse(url)
         schemes.get(url.scheme).remove(url, **args)
 
@@ -332,11 +396,8 @@ class Sample(object):
 class Generator(object):
     """Generates random strings of plausible text.
 
-    Markov chains are used to generate the random text based on the analysis of
-    a sample text. In the analysis, only paragraph, sentence and word lengths,
-    and some basic punctuation matter -- the actual words are ignored. A
-    provided list of words is then used to generate the random text, so that it
-    will have a similar distribution of paragraph, sentence and word lengths.
+    :param sample:  A :py:class:`Sample` that will provide all the needed info
+                    to generate the text.
 
     The attributes of this class should be considered 'read-only'. Even if
     you can access the internal state of the generator, you don't want to mess
@@ -374,14 +435,16 @@ class Generator(object):
         :py:class:`Generator` methods with predefined set of arguments.
 
         >>> from loremipsum import generator
-        >>> g = generator.Generator(...)
+        >>> from loremipsum import samples
+        >>> g = generator.Generator(samples.DEFAULT)
         >>> with g.default(sentence_sigma=0.9, sentence_mean=0.9) as short:
-        >>>     sentences = short.generate_sentences(3)
-        >>>     paragraps = short.generate_paragraphs(5, incipit=True)
+        ...     sentences = short.generate_sentences(3)
+        ...     paragraps = short.generate_paragraphs(5, incipit=True)
+        ...
         """
         copy = self._sample._s.copy()
         copy.update(args)
-        yield Generator(sample=Sample.duplicated(copy))
+        yield Generator(sample=Sample(sample=copy))
 
     def generate_word(self, length=None):
         """Selects a random word from the lexicon.
@@ -398,11 +461,11 @@ class Generator(object):
     def generate_words(self, amount, length=None):
         """Creates a generatator of the specified amount of words.
 
-        Words are randomly selected from the lexicon. Also accepts length
-        argument as per :py:meth:`generate_word`.
-
         :param int amount:  the amount of words to be generated
         :rtype:             generator
+
+        Words are randomly selected from the lexicon. Also accepts length
+        argument as per :py:meth:`generate_word`.
         """
 
         for __ in _irange(amount):
@@ -487,12 +550,12 @@ class Generator(object):
     def generate_sentences(self, amount, **args):
         """Generator method that yields sentences, of random length.
 
-        Also accepts the same arguments as :py:meth:`generate_sentence`.
-
         :param int amount:              The amouont of sentences to generate
         :retruns:                       A generator of specified amount tuples
                                         as per :py:meth:`generate_sentence`.
         :rtype:                         generator
+
+        Also accepts the same arguments as :py:meth:`generate_sentence`.
         """
         yield self.generate_sentence(**args)
         args['incipit'] = False
@@ -501,8 +564,6 @@ class Generator(object):
 
     def generate_paragraph(self, **args):
         """Generates a single paragraph, of random length.
-
-        Also accepts the same arguments as :py:meth:`generate_sentence`.
 
         :param int paragraph_len:       The length of the paragraph in
                                         sentences. Takes precedence over
@@ -513,6 +574,8 @@ class Generator(object):
                                         number of words, and the paragraph
                                         text.
         :rtype:                         tuple(int, int, str or unicode)
+
+        Also accepts the same arguments as :py:meth:`generate_sentence`.
         """
         # The length of the paragraph is a normally distributed random
         # variable.
@@ -534,12 +597,12 @@ class Generator(object):
     def generate_paragraphs(self, amount, **args):
         """Generator method that yields paragraphs, of random length.
 
-        Also accepts the same arguments as :py:meth:`generate_paragraph`.
-
         :param int amount:              The amount of paragraphs to generate.
         :retruns:                       A generator of specified amount tuples.
                                         as per :py:meth:`generate_paragraph`
         :rtype:                         generator
+
+        Also accepts the same arguments as :py:meth:`generate_paragraph`.
         """
         yield self.generate_paragraph(**args)
         args['incipit'] = False
