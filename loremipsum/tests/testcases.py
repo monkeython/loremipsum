@@ -24,11 +24,12 @@ class TestPackagesPlugs(unittest.TestCase):
 
     def test_registered(self):
         """Test package registered function."""
+        _REGISTERED = loremipsum.plugs._REGISTERED
         registered = self._package.registered()
         self.assertIsInstance(registered, dict)
         self.assertIn(self._plug_name, registered)
-        self.assertEqual(registered, loremipsum._PLUGS[self._package.__name__])
-        self.assertIsNot(registered, loremipsum._PLUGS[self._package.__name__])
+        self.assertEqual(registered, _REGISTERED[self._package.__name__])
+        self.assertIsNot(registered, _REGISTERED[self._package.__name__])
 
     def test_DEFAULT(self):
         """Test default package plug."""

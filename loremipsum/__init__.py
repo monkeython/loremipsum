@@ -59,14 +59,9 @@ __classifiers__ = [
     'Topic :: Software Development :: Libraries :: Python Modules']
 
 from loremipsum import generator
+from loremipsum import plugs
 from loremipsum import samples
 from loremipsum import serialization
-
-import collections
-import functools
-import string
-
-import pkg_resources
 
 # Declaring the package public API
 __all__ = [
@@ -81,70 +76,16 @@ __all__ = [
     'get_paragraph',
     'get_paragraphs',
     'generator',
+    'plugs',
     'samples',
     'serialization']
 
 
-# Plugin register
-_PLUGS = collections.defaultdict(dict)
-
-
-def _plugs_get(name, default=None, package=None):
-    """Returns the desired plugged in object.
-
-    :param str name:    The plugin name.
-    :param default:     The default value to return if lookup fails.
-    :returns:           The plugged in object.
-    """
-    maketrans = getattr(string, 'maketrans', getattr(str, 'maketrans', None))
-    name = name.translate(maketrans("/-", "__"))
-    return _PLUGS[package.__name__].get(name, default)
-
-
-def _plugs_set_default(name, package=None):
-    """Set the default plugin.
-
-    :param str name:    The plugin name.
-    """
-    package.DEFAULT = _plugs_get(name, None, package)
-
-
-def _plugs_registered(package=None):
-    """Returns a dictionary of the registered plugins.
-
-    :returns:           dict
-    """
-    return _PLUGS[package.__name__].copy()
-
-
-def _plugs_init(package):
-    """Set the package up for plugins management.
-
-    Makes the following functions available:
-    * ``package.get``
-    * ``package.set_default``
-    * ``package.registered``
-
-    :param package:     The package object to setup for plugins.
-    """
-
-    package.DEFAULT = None
-    package.get = functools.partial(_plugs_get, package=package)
-    package.set_default = functools.partial(_plugs_set_default, package=package)
-    package.registered = functools.partial(_plugs_registered, package=package)
-
-    for module_name in package.__all__:
-        name, value = module_name.rstrip('_'), getattr(package, module_name)
-        _PLUGS[package.__name__][name] = value
-
-    plugins = pkg_resources.iter_entry_points(package.__name__)
-    _PLUGS[package.__name__].update(p for p in plugins)
-
 # Setting up the plugs
-_plugs_init(samples)
-_plugs_init(serialization.schemes)
-_plugs_init(serialization.content_types)
-_plugs_init(serialization.content_encodings)
+plugs.setup(samples)
+plugs.setup(serialization.schemes)
+plugs.setup(serialization.content_types)
+plugs.setup(serialization.content_encodings)
 
 # Setting the plugs defaults
 serialization.schemes.set_default('file')

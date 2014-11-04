@@ -51,10 +51,10 @@ class TestSerializationContentEncodingsPlugs(testcases.TestPackagesPlugs):
 class TestPackagePlugsInit(unittest.TestCase):
     """Test the package plugs initialization."""
 
-    def test__plugs_init(self):
+    def test_setup(self):
         """Test the initialization function."""
         plugs_testpackage = loremipsum.tests.plugs_testpackage
-        loremipsum._plugs_init(plugs_testpackage)
+        loremipsum.plugs.setup(plugs_testpackage)
         for function in ['get', 'set_default', 'registered']:
             self.assertIsNotNone(getattr(plugs_testpackage, function, None))
 
