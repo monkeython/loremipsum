@@ -34,6 +34,7 @@ plugins. A plugs ready package has the following attributes/functions available:
 """
 import collections
 import functools
+import importlib
 import string
 
 import pkg_resources
@@ -43,7 +44,7 @@ _REGISTERED = collections.defaultdict(dict)
 
 
 def _get(name, default=None, package=None):
-    maketrans = getattr(string, 'maketrans', getattr(str, 'maketrans', None))
+    maketrans = getattr(string, 'maketrans', getattr(str, 'maketrans'))
     name = name.translate(maketrans("/-", "__"))
     return _REGISTERED[package.__name__].get(name, default)
 
@@ -59,11 +60,11 @@ def _registered(package=None):
 def setup(package):
     """Set the package/module up for plugins management.
 
-    :param package:     The package object to setup for plugins.
+    :param package:     The package/module object to setup for plugins.
 
     This function adds all the object listed in the package/module ``__all__``
-    variable. ``plugin`` names are converted removing trailinig ``_``. Also,
-    adds the all the objects returned by
+    variable. ``plugin`` names listed in ``__all__`` are converted removing
+    trailinig (right) ``_``. Also, adds all the objects returned by
     :py:func:`pkg_resources.iter_entry_points`: each object must be a callable
     which returns a value that can be used as argument for
     :py:meth:`dict.update`.
@@ -74,9 +75,15 @@ def setup(package):
     package.set_default = functools.partial(_set_default, package=package)
     package.registered = functools.partial(_registered, package=package)
 
+    pkg_name = package.__name__
     for module_name in package.__all__:
-        name, value = module_name.rstrip('_'), getattr(package, module_name)
-        _REGISTERED[package.__name__][name] = value
+        try:
+            value = importlib.import_module(module_name, pkg_name)
+        except ImportError:
+            value = getattr(package, module_name)
+
+        name = module_name.rstrip('_')
+        _REGISTERED[pkg_name][name] = value
 
     plugins = pkg_resources.iter_entry_points(package.__name__)
-    _REGISTERED[package.__name__].update(p for p in plugins)
+    _REGISTERED[package.__name__].update(plugins)
