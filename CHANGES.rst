@@ -1,6 +1,8 @@
 Changes
 =======
 
+1.0.6
+   * Fixed python3 unicode compatibility
 1.0.4
    * Added MANIFEST.in
    * Removed dependencies on distribute
