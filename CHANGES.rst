@@ -3,6 +3,9 @@ Changes
 
 1.0.6
    * Fixed python3 unicode compatibility
+1.0.5
+   * Added python3 support: fixes #8
+   * Added README.rst to MANIFEST.in: fixes #9
 1.0.4
    * Added MANIFEST.in
    * Removed dependencies on distribute
