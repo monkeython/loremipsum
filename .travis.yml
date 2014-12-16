@@ -15,9 +15,11 @@ script:
   - pylint -E --rcfile .pylintrc loremipsum
 deploy:
   provider: pypi
+  distributions: "sdist bdist_wheel"
   user: monkeython
   password:
-    secure: el+nlWhEjos4ofYJJf+FrU4H9o28bzLzsu3wW+xx8mPZHE/vY33WEniLSqI7wION+KlRXCVASa1XF25rKFp2TIybB8FlpyUZdz2gprUbX9tGy6uxjLnWS9BnkSqu3EfQRfN0p9pCwGXhJPNXYI9A8kZnaxKtNhZnkLnxjrSUaV8=
+    secure: "el+nlWhEjos4ofYJJf+FrU4H9o28bzLzsu3wW+xx8mPZHE/vY33WEniLSqI7wION+KlRXCVASa1XF25rKFp2TIybB8FlpyUZdz2gprUbX9tGy6uxjLnWS9BnkSqu3EfQRfN0p9pCwGXhJPNXYI9A8kZnaxKtNhZnkLnxjrSUaV8="
   on:
     tags: true
+    all_branches: true
     repo: monkeython/loremipsum
