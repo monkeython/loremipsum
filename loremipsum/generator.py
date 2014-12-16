@@ -23,7 +23,9 @@ _SENTENCE_DELIMITERS = ['.', '?', '!']
 _WORD_DELIMITERS = [','] + _SENTENCE_DELIMITERS
 
 _SAMPLE = resource_string(__name__, 'default/sample.txt')
-_DICTIONARY = resource_string(__name__, 'default/dictionary.txt').split()
+_DICTIONARY = resource_string(__name__, 'default/dictionary.txt')
+_SAMPLE = _SAMPLE.encode('UTF-8')
+_DICTIONARY = _DICTIONARY.encode('UTF-8').split()
 
 _LOREM_IPSUM = 'lorem ipsum dolor sit amet, consecteteur adipiscing elit'
 
